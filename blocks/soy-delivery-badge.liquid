@@ -31,8 +31,10 @@
   <ul class="soy-assurance" role="list" {{ block.shopify_attributes }}>
     {%- for n in (1..3) -%}
       {%- liquid
-        assign text = s['row' | append: n | append: '_text']
-        assign icon_key = s['row' | append: n | append: '_icon']
+        assign key_text = 'row' | append: n | append: '_text'
+        assign key_icon = 'row' | append: n | append: '_icon'
+        assign text = s[key_text]
+        assign icon_key = s[key_icon]
       -%}
       {%- if text != blank -%}
         <li class="soy-assurance__row">
