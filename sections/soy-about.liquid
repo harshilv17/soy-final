@@ -1,0 +1,471 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="soy-about section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="soy-about__inner page-width">
+
+    <header class="soy-about__header">
+      <h1 class="soy-about__heading">
+        {{ section.settings.heading | escape }}
+        {%- if section.settings.heading_script != blank -%}
+          <em class="soy-about__heading-script">{{ section.settings.heading_script | escape }}</em>
+        {%- endif -%}
+      </h1>
+      {%- if section.settings.intro != blank -%}
+        <p class="soy-about__intro">{{ section.settings.intro | escape }}</p>
+      {%- endif -%}
+    </header>
+
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+
+        {%- when 'text_block' -%}
+          <div class="soy-about__text-block" {{ block.shopify_attributes }}>
+            {%- if block.settings.title != blank -%}
+              <h2 class="soy-about__text-title">{{ block.settings.title | escape }}</h2>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <div class="soy-about__text-body rte">{{ block.settings.text }}</div>
+            {%- endif -%}
+          </div>
+
+        {%- when 'image_pair' -%}
+          {%- if block.settings.image_1 != blank or block.settings.image_2 != blank -%}
+            <div class="soy-about__image-pair" {{ block.shopify_attributes }}>
+              {%- if block.settings.image_1 != blank -%}
+                <div class="soy-about__image-pair-item">
+                  {{
+                    block.settings.image_1
+                    | image_url: width: 800
+                    | image_tag:
+                      widths: '400, 600, 800',
+                      sizes: '(min-width: 750px) 50vw, 100vw',
+                      loading: 'lazy',
+                      class: 'soy-about__image',
+                      alt: block.settings.image_1.alt
+                  }}
+                </div>
+              {%- endif -%}
+              {%- if block.settings.image_2 != blank -%}
+                <div class="soy-about__image-pair-item">
+                  {{
+                    block.settings.image_2
+                    | image_url: width: 800
+                    | image_tag:
+                      widths: '400, 600, 800',
+                      sizes: '(min-width: 750px) 50vw, 100vw',
+                      loading: 'lazy',
+                      class: 'soy-about__image',
+                      alt: block.settings.image_2.alt
+                  }}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+        {%- when 'founders' -%}
+          <div class="soy-about__founders" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h2 class="soy-about__founders-heading">{{ block.settings.heading | escape }}</h2>
+            {%- endif -%}
+            <div class="soy-about__founders-grid">
+              {%- if block.settings.founder_1_name != blank or block.settings.founder_1_image != blank -%}
+                <div class="soy-about__founder">
+                  {%- if block.settings.founder_1_image != blank -%}
+                    <div class="soy-about__founder-image-wrap">
+                      {{
+                        block.settings.founder_1_image
+                        | image_url: width: 600
+                        | image_tag:
+                          widths: '300, 450, 600',
+                          sizes: '(min-width: 750px) 25vw, 50vw',
+                          loading: 'lazy',
+                          class: 'soy-about__founder-image',
+                          alt: block.settings.founder_1_name | escape
+                      }}
+                    </div>
+                  {%- endif -%}
+                  {%- if block.settings.founder_1_name != blank -%}
+                    <h3 class="soy-about__founder-name">{{ block.settings.founder_1_name | escape }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.founder_1_role != blank -%}
+                    <p class="soy-about__founder-role">{{ block.settings.founder_1_role | escape }}</p>
+                  {%- endif -%}
+                  {%- if block.settings.founder_1_bio != blank -%}
+                    <p class="soy-about__founder-bio">{{ block.settings.founder_1_bio | escape }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.founder_2_name != blank or block.settings.founder_2_image != blank -%}
+                <div class="soy-about__founder">
+                  {%- if block.settings.founder_2_image != blank -%}
+                    <div class="soy-about__founder-image-wrap">
+                      {{
+                        block.settings.founder_2_image
+                        | image_url: width: 600
+                        | image_tag:
+                          widths: '300, 450, 600',
+                          sizes: '(min-width: 750px) 25vw, 50vw',
+                          loading: 'lazy',
+                          class: 'soy-about__founder-image',
+                          alt: block.settings.founder_2_name | escape
+                      }}
+                    </div>
+                  {%- endif -%}
+                  {%- if block.settings.founder_2_name != blank -%}
+                    <h3 class="soy-about__founder-name">{{ block.settings.founder_2_name | escape }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.founder_2_role != blank -%}
+                    <p class="soy-about__founder-role">{{ block.settings.founder_2_role | escape }}</p>
+                  {%- endif -%}
+                  {%- if block.settings.founder_2_bio != blank -%}
+                    <p class="soy-about__founder-bio">{{ block.settings.founder_2_bio | escape }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+
+      {%- endcase -%}
+    {%- endfor -%}
+
+  </div>
+</div>
+
+{% stylesheet %}
+  .soy-about__inner {
+    max-width: 52rem;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .soy-about__header {
+    text-align: center;
+  }
+
+  .soy-about__heading {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    line-height: 1.1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-about__heading-script {
+    display: block;
+    font-style: italic;
+    font-family: var(--font-accent--family);
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1;
+    color: var(--color-primary);
+  }
+
+  .soy-about__intro {
+    margin: 0 auto;
+    max-width: 36rem;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: rgb(var(--color-foreground-rgb) / 0.75);
+  }
+
+  .soy-about__text-block {
+    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    padding-block-start: 3rem;
+  }
+
+  .soy-about__text-title {
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-about__text-body {
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    color: rgb(var(--color-foreground-rgb) / 0.8);
+  }
+
+  .soy-about__text-body p {
+    margin: 0 0 1rem;
+  }
+
+  .soy-about__image-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    padding-block-start: 3rem;
+  }
+
+  .soy-about__image-pair-item {
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .soy-about__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Founders */
+  .soy-about__founders {
+    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    padding-block-start: 3rem;
+  }
+
+  .soy-about__founders-heading {
+    margin: 0 0 2.5rem;
+    text-align: center;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-about__founders-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 3rem;
+  }
+
+  .soy-about__founder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .soy-about__founder-image-wrap {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-block-end: 0.5rem;
+  }
+
+  .soy-about__founder-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+
+  .soy-about__founder-name {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-about__founder-role {
+    margin: 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .soy-about__founder-bio {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: rgb(var(--color-foreground-rgb) / 0.75);
+  }
+
+  @media screen and (max-width: 749px) {
+    .soy-about__image-pair {
+      grid-template-columns: 1fr;
+    }
+
+    .soy-about__founders-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "About",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our"
+    },
+    {
+      "type": "text",
+      "id": "heading_script",
+      "label": "Heading script (italic accent)",
+      "default": "Story"
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro text",
+      "default": "Born from a love of handcrafted textiles and slow fashion, Shades of You brings you batik pieces made with intention."
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text_block",
+      "name": "Text block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "image_pair",
+      "name": "Image pair",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image 2"
+        }
+      ]
+    },
+    {
+      "type": "founders",
+      "name": "Founders",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Section heading",
+          "default": "Meet the Founders"
+        },
+        {
+          "type": "header",
+          "content": "Founder 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "founder_1_image",
+          "label": "Photo"
+        },
+        {
+          "type": "text",
+          "id": "founder_1_name",
+          "label": "Name",
+          "default": "Aarushi"
+        },
+        {
+          "type": "text",
+          "id": "founder_1_role",
+          "label": "Role",
+          "default": "Co-founder, design & production"
+        },
+        {
+          "type": "textarea",
+          "id": "founder_1_bio",
+          "label": "Bio (optional)"
+        },
+        {
+          "type": "header",
+          "content": "Founder 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "founder_2_image",
+          "label": "Photo"
+        },
+        {
+          "type": "text",
+          "id": "founder_2_name",
+          "label": "Name",
+          "default": "Shanaya"
+        },
+        {
+          "type": "text",
+          "id": "founder_2_role",
+          "label": "Role",
+          "default": "Co-founder, brand & marketing"
+        },
+        {
+          "type": "textarea",
+          "id": "founder_2_bio",
+          "label": "Bio (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About"
+    }
+  ]
+}
+{% endschema %}

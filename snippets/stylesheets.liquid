@@ -1,0 +1,6 @@
+{{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
+{{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'soy-global.css' | asset_url | stylesheet_tag: preload: true }}
+{% if template.name == 'product' %}
+  {{ 'soy-product.css' | asset_url | stylesheet_tag: preload: true }}
+{% endif %}

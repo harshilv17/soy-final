@@ -1,0 +1,85 @@
+{% doc %}
+  Renders the product description inside a collapsible accordion panel.
+  Reuses the existing accordion-custom web component and details/summary pattern.
+  @param {block} block - Block settings (heading, open_by_default)
+{% enddoc %}
+
+{% liquid
+  assign heading = block.settings.heading | default: 'Description'
+%}
+
+<accordion-custom
+  {% if block.settings.open_by_default %}
+    open-by-default-on-desktop
+    open-by-default-on-mobile
+  {% endif %}
+  class="soy-desc-accordion"
+  {{ block.shopify_attributes }}
+>
+  <details
+    class="details soy-desc-accordion__details"
+    {% if block.settings.open_by_default %}open{% endif %}
+  >
+    <summary class="details__header soy-desc-accordion__summary">
+      {{ heading }}
+      <span class="svg-wrapper icon-caret icon-animated">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </span>
+    </summary>
+    <div class="details-content soy-desc-accordion__body rte">
+      {{ product.description }}
+    </div>
+  </details>
+</accordion-custom>
+
+{% stylesheet %}
+  .soy-desc-accordion__details {
+    border-block-start: 1px solid var(--color-border);
+    border-block-end: 1px solid var(--color-border);
+    width: 100%;
+  }
+
+  .soy-desc-accordion__summary {
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    min-height: var(--minimum-touch-target, 44px);
+  }
+
+  .soy-desc-accordion__body {
+    padding-block-end: var(--padding-md);
+    font-size: var(--font-size--sm);
+    line-height: var(--line-height--body-normal);
+    color: rgb(var(--color-foreground-rgb) / 0.8);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product description",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_by_default",
+      "label": "Open by default",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product description",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

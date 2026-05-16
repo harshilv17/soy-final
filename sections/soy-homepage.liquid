@@ -1,0 +1,251 @@
+{% comment %}
+  SOY Homepage Section — "The Digital Atelier"
+  Based on Stitch design: Home - Shades of You Redesign
+{% endcomment %}
+
+{{ 'soy-homepage.css' | asset_url | stylesheet_tag }}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Serif:ital,wght@0,300;0,400;1,300;1,400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+<div class="soy-homepage">
+
+  <div class="soy-announcement-bar">
+    <p>{{ section.settings.announcement_text | default: 'FREE SHIPPING ON ORDERS ABOVE ₹999 · COD AVAILABLE' }}</p>
+  </div>
+
+  <header class="soy-header">
+    <button class="soy-header__menu" aria-label="Open menu">
+      <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+        <rect width="22" height="2" fill="#1a1a1a"/>
+        <rect y="7" width="22" height="2" fill="#1a1a1a"/>
+        <rect y="14" width="22" height="2" fill="#1a1a1a"/>
+      </svg>
+    </button>
+    <a href="/" class="soy-header__logo">{{ section.settings.logo_text | default: 'Shades of You' }}</a>
+    <div class="soy-header__actions">
+      <a href="/search" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="8.5" cy="8.5" r="6.5" stroke="#1a1a1a" stroke-width="1.5"/>
+          <line x1="13.5" y1="13.5" x2="19" y2="19" stroke="#1a1a1a" stroke-width="1.5"/>
+        </svg>
+      </a>
+      <a href="/cart" aria-label="Cart" class="soy-header__cart">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M1 1H4L6.5 13H15.5L18 5H5" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="square"/>
+          <circle cx="8" cy="17" r="1" fill="#1a1a1a"/>
+          <circle cx="14" cy="17" r="1" fill="#1a1a1a"/>
+        </svg>
+        <span class="soy-header__cart-count">{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="soy-hero">
+    {% if section.settings.hero_image %}
+      <img
+        src="{{ section.settings.hero_image | image_url: width: 800 }}"
+        srcset="
+          {{ section.settings.hero_image | image_url: width: 400 }} 400w,
+          {{ section.settings.hero_image | image_url: width: 800 }} 800w,
+          {{ section.settings.hero_image | image_url: width: 1200 }} 1200w"
+        sizes="100vw"
+        alt="{{ section.settings.hero_image.alt | default: 'Shades of You' }}"
+        loading="eager"
+        fetchpriority="high"
+        width="800"
+        height="960"
+        class="soy-hero__image"
+      >
+    {% endif %}
+    <div class="soy-hero__content">
+      <h1 class="soy-hero__headline">
+        {{ section.settings.hero_headline | default: 'Crafted by hand.<br>Made for <em>you</em>.' }}
+      </h1>
+      <div class="soy-hero__ctas">
+        <a href="{{ section.settings.hero_primary_link | default: '/collections/new' }}" class="soy-btn soy-btn--primary">
+          {{ section.settings.hero_primary_label | default: 'SHOP NEW →' }}
+        </a>
+        <a href="{{ section.settings.hero_secondary_link | default: '/collections/all' }}" class="soy-btn soy-btn--secondary">
+          {{ section.settings.hero_secondary_label | default: 'EXPLORE COLLECTIONS' }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="soy-categories">
+    <h2 class="soy-section-label">SHOP BY CATEGORY</h2>
+    <div class="soy-categories__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'category' %}
+          <a href="{{ block.settings.link }}" class="soy-category-item" {{ block.shopify_attributes }}>
+            <div class="soy-category-item__icon">
+              {% if block.settings.icon %}
+                <img src="{{ block.settings.icon | image_url: width: 80 }}" alt="{{ block.settings.label }}" width="48" height="48" loading="lazy">
+              {% else %}
+                <div class="soy-category-item__icon-placeholder"></div>
+              {% endif %}
+            </div>
+            <span class="soy-category-item__label">{{ block.settings.label }}</span>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="soy-favourites">
+    <h2 class="soy-section-heading soy-section-heading--favourites">
+      <span class="soy-section-heading__primary">Customer favourites</span>
+      <span class="soy-section-heading__script">Most loved</span>
+    </h2>
+    <div class="soy-favourites__carousel" id="soy-favourites-carousel">
+      {% assign fav_collection = collections[section.settings.favourites_collection] %}
+      {% if fav_collection != blank %}
+        {% for product in fav_collection.products limit: 6 %}
+          <a href="{{ product.url }}" class="soy-product-card">
+            <div class="soy-product-card__image-wrap">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  alt="{{ product.featured_image.alt | default: product.title }}"
+                  loading="lazy"
+                  width="{{ product.featured_image.width }}"
+                  height="{{ product.featured_image.height }}"
+                  class="soy-product-card__image"
+                >
+              {% endif %}
+            </div>
+            <div class="soy-product-card__info" style="min-height:82px;">
+              <p class="soy-product-card__name">{{ product.title }}</p>
+              <p class="soy-product-card__price">₹{{ product.price | money_without_currency }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <button class="soy-carousel__next" aria-label="Next" onclick="soyCarouselNext()">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="17.5" stroke="#1a1a1a"/>
+        <path d="M15 12l6 6-6 6" stroke="#1a1a1a" stroke-width="1.5"/>
+      </svg>
+    </button>
+  </section>
+
+  <section class="soy-occasions">
+    <h2 class="soy-section-label">SHOP BY OCCASION</h2>
+    <div class="soy-occasions__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'occasion' %}
+          <a href="{{ block.settings.link }}" class="soy-occasion-card" {{ block.shopify_attributes }}>
+            {% if block.settings.image %}
+              <img src="{{ block.settings.image | image_url: width: 400 }}" alt="{{ block.settings.label }}" loading="lazy" width="200" height="200" class="soy-occasion-card__image">
+            {% endif %}
+            <div class="soy-occasion-card__overlay">
+              <span class="soy-occasion-card__label">{{ block.settings.label }}</span>
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <nav class="soy-bottom-nav" aria-label="Main navigation">
+    <a href="/" class="soy-bottom-nav__item soy-bottom-nav__item--active">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M1 9L11 1L21 9V21H15V15H7V21H1V9Z" stroke="#1a1a1a" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span>Home</span>
+    </a>
+    <a href="/collections" class="soy-bottom-nav__item">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="1" y="1" width="9" height="9" stroke="#1a1a1a" stroke-width="1.5"/>
+        <rect x="12" y="1" width="9" height="9" stroke="#1a1a1a" stroke-width="1.5"/>
+        <rect x="1" y="12" width="9" height="9" stroke="#1a1a1a" stroke-width="1.5"/>
+        <rect x="12" y="12" width="9" height="9" stroke="#1a1a1a" stroke-width="1.5"/>
+      </svg>
+      <span>Categories</span>
+    </a>
+    <a href="/cart" class="soy-bottom-nav__item">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M1 1H4.5L7 14H17L20 5H6" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="square"/>
+        <circle cx="9" cy="19" r="1.5" fill="#1a1a1a"/>
+        <circle cx="16" cy="19" r="1.5" fill="#1a1a1a"/>
+      </svg>
+      <span>Cart</span>
+    </a>
+    <a href="/account" class="soy-bottom-nav__item">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle cx="11" cy="7" r="4" stroke="#1a1a1a" stroke-width="1.5"/>
+        <path d="M1 21C1 16.5817 5.47715 13 11 13C16.5228 13 21 16.5817 21 21" stroke="#1a1a1a" stroke-width="1.5"/>
+      </svg>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+</div>
+
+<script>
+  function soyCarouselNext() {
+    const carousel = document.getElementById('soy-favourites-carousel');
+    if (!carousel) return;
+    const card = carousel.querySelector('.soy-product-card');
+    if (!card) return;
+    carousel.scrollBy({ left: card.offsetWidth + 16, behavior: 'smooth' });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "SOY Homepage",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "announcement_text", "label": "Announcement text", "default": "FREE SHIPPING ON ORDERS ABOVE ₹999 · COD AVAILABLE" },
+    { "type": "text", "id": "logo_text", "label": "Logo text", "default": "Shades of You" },
+    { "type": "image_picker", "id": "hero_image", "label": "Hero image" },
+    { "type": "textarea", "id": "hero_headline", "label": "Hero headline", "default": "Crafted by hand.<br>Made for <em>you</em>." },
+    { "type": "text", "id": "hero_primary_label", "label": "Primary CTA label", "default": "SHOP NEW →" },
+    { "type": "url", "id": "hero_primary_link", "label": "Primary CTA link" },
+    { "type": "text", "id": "hero_secondary_label", "label": "Secondary CTA label", "default": "EXPLORE COLLECTIONS" },
+    { "type": "url", "id": "hero_secondary_link", "label": "Secondary CTA link" },
+    { "type": "collection", "id": "favourites_collection", "label": "Customer Favourites collection" }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "limit": 6,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Category name", "default": "Kurtas" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "image_picker", "id": "icon", "label": "Icon image" }
+      ]
+    },
+    {
+      "type": "occasion",
+      "name": "Occasion",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Occasion name", "default": "Festive Season" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "image_picker", "id": "image", "label": "Occasion image" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SOY Homepage",
+      "blocks": [
+        { "type": "category", "settings": { "label": "Kurtas" } },
+        { "type": "category", "settings": { "label": "Sets" } },
+        { "type": "category", "settings": { "label": "Dupattas" } },
+        { "type": "category", "settings": { "label": "Bottoms" } },
+        { "type": "occasion", "settings": { "label": "Work Day Wear" } },
+        { "type": "occasion", "settings": { "label": "Festive Season" } },
+        { "type": "occasion", "settings": { "label": "Weekend Easy" } },
+        { "type": "occasion", "settings": { "label": "Gift with Love" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

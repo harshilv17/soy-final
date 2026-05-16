@@ -1,0 +1,283 @@
+{%- liquid
+  assign s = block.settings
+  assign product = closest.product
+  assign uid = block.id
+
+  assign fabric = s.fabric
+  assign fit_fall = s.fit_fall
+  assign wash_care = s.wash_care
+  assign included = s.included_items
+  if s.use_metafields
+    if product.metafields.custom.fabric != blank
+      assign fabric = product.metafields.custom.fabric.value | default: product.metafields.custom.fabric
+    endif
+    if product.metafields.custom.fit_feel_amp_fall != blank
+      assign fit_fall = product.metafields.custom.fit_feel_amp_fall.value | default: product.metafields.custom.fit_feel_amp_fall
+    endif
+    if product.metafields.custom.wash_care != blank
+      assign wash_care = product.metafields.custom.wash_care.value | default: product.metafields.custom.wash_care
+    endif
+    if product.metafields.custom.whats_included != blank
+      assign included = product.metafields.custom.whats_included.value | default: product.metafields.custom.whats_included
+    endif
+  endif
+-%}
+
+<div class="soy-tabs" {{ block.shopify_attributes }}>
+  <input class="soy-tabs__radio" type="radio" name="soy-tabs-{{ uid }}" id="soy-tab1-{{ uid }}" checked>
+  <input class="soy-tabs__radio" type="radio" name="soy-tabs-{{ uid }}" id="soy-tab2-{{ uid }}">
+  <input class="soy-tabs__radio" type="radio" name="soy-tabs-{{ uid }}" id="soy-tab3-{{ uid }}">
+
+  <div class="soy-tabs__nav" role="tablist">
+    <label class="soy-tabs__tab" for="soy-tab1-{{ uid }}">{{ s.tab1_title | escape }}</label>
+    <label class="soy-tabs__tab" for="soy-tab2-{{ uid }}">{{ s.tab2_title | escape }}</label>
+    <label class="soy-tabs__tab" for="soy-tab3-{{ uid }}">{{ s.tab3_title | escape }}</label>
+  </div>
+
+  <div class="soy-tabs__panels">
+    <div class="soy-tabs__panel" role="tabpanel">
+      {%- if fabric != blank -%}
+        <div class="soy-tabs__detail">
+          <p class="soy-tabs__label">{{ s.fabric_label | escape }}</p>
+          <div class="soy-tabs__body">{{ fabric }}</div>
+        </div>
+      {%- endif -%}
+      {%- if fit_fall != blank -%}
+        <div class="soy-tabs__detail">
+          <p class="soy-tabs__label">{{ s.fit_label | escape }}</p>
+          <div class="soy-tabs__body">{{ fit_fall }}</div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="soy-tabs__panel" role="tabpanel">
+      {%- if wash_care != blank -%}
+        <div class="soy-tabs__detail">
+          <p class="soy-tabs__label">{{ s.wash_label | escape }}</p>
+          <div class="soy-tabs__body">{{ wash_care }}</div>
+        </div>
+      {%- endif -%}
+      {%- if included != blank -%}
+        <div class="soy-tabs__detail">
+          <p class="soy-tabs__label">{{ s.included_heading | escape }}</p>
+          <ul class="soy-tabs__list">
+            {%- assign items = included | split: ',' -%}
+            {%- for item in items -%}
+              <li>{{ item | strip }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="soy-tabs__panel" role="tabpanel">
+      {%- if s.shipping != blank -%}
+        <div class="soy-tabs__detail">
+          <p class="soy-tabs__label">{{ s.shipping_label | escape }}</p>
+          <div class="soy-tabs__body">{{ s.shipping }}</div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .soy-tabs {
+    width: 100%;
+  }
+
+  .soy-tabs__radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .soy-tabs__nav {
+    display: flex;
+    gap: 1.25rem;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+  }
+
+  .soy-tabs__tab {
+    padding: 0 0 0.625rem;
+    font-family: var(--font-body--family);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.5);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s ease;
+  }
+
+  .soy-tabs__tab:hover {
+    color: var(--color-foreground);
+  }
+
+  .soy-tabs__panels {
+    padding-block-start: 1rem;
+  }
+
+  .soy-tabs__panel {
+    display: none;
+  }
+
+  .soy-tabs__detail + .soy-tabs__detail {
+    margin-block-start: 0.875rem;
+  }
+
+  .soy-tabs__label {
+    margin: 0 0 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+  }
+
+  .soy-tabs__body,
+  .soy-tabs__body p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-foreground);
+  }
+
+  .soy-tabs__list {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-foreground);
+  }
+
+  /* Tab 1 active */
+  .soy-tabs__radio:nth-of-type(1):checked ~ .soy-tabs__panels > .soy-tabs__panel:nth-child(1),
+  .soy-tabs__radio:nth-of-type(2):checked ~ .soy-tabs__panels > .soy-tabs__panel:nth-child(2),
+  .soy-tabs__radio:nth-of-type(3):checked ~ .soy-tabs__panels > .soy-tabs__panel:nth-child(3) {
+    display: block;
+  }
+
+  .soy-tabs__radio:nth-of-type(1):checked ~ .soy-tabs__nav > .soy-tabs__tab:nth-child(1),
+  .soy-tabs__radio:nth-of-type(2):checked ~ .soy-tabs__nav > .soy-tabs__tab:nth-child(2),
+  .soy-tabs__radio:nth-of-type(3):checked ~ .soy-tabs__nav > .soy-tabs__tab:nth-child(3) {
+    color: var(--color-foreground);
+    border-bottom-color: var(--color-foreground);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product detail panels",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_metafields",
+      "label": "Use product metafields when set",
+      "info": "Maps: custom.fabric, custom.fit_feel_amp_fall, custom.wash_care, custom.whats_included (comma-separated).",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Tab 1"
+    },
+    {
+      "type": "text",
+      "id": "tab1_title",
+      "label": "Tab label",
+      "default": "Fit & fabric"
+    },
+    {
+      "type": "text",
+      "id": "fabric_label",
+      "label": "Fabric label",
+      "default": "Fabric"
+    },
+    {
+      "type": "textarea",
+      "id": "fabric",
+      "label": "Fabric",
+      "default": "100% organic cotton. Breathable, skin-friendly, and gets softer with every wash."
+    },
+    {
+      "type": "text",
+      "id": "fit_label",
+      "label": "Fit label",
+      "default": "Fit & fall"
+    },
+    {
+      "type": "textarea",
+      "id": "fit_fall",
+      "label": "Fit & fall",
+      "default": "Relaxed straight fit. Falls to the knee. Pair the kurta with the included trousers or your own bottoms."
+    },
+    {
+      "type": "header",
+      "content": "Tab 2"
+    },
+    {
+      "type": "text",
+      "id": "tab2_title",
+      "label": "Tab label",
+      "default": "Fabric & care"
+    },
+    {
+      "type": "text",
+      "id": "wash_label",
+      "label": "Wash label",
+      "default": "Wash care"
+    },
+    {
+      "type": "textarea",
+      "id": "wash_care",
+      "label": "Wash care",
+      "default": "Hand wash cold or gentle machine wash. Dry in shade. Do not bleach or tumble dry."
+    },
+    {
+      "type": "text",
+      "id": "included_heading",
+      "label": "What's included heading",
+      "default": "What's included"
+    },
+    {
+      "type": "textarea",
+      "id": "included_items",
+      "label": "Items (comma-separated)",
+      "default": "Kurta, Trousers, Dupatta"
+    },
+    {
+      "type": "header",
+      "content": "Tab 3"
+    },
+    {
+      "type": "text",
+      "id": "tab3_title",
+      "label": "Tab label",
+      "default": "Shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_label",
+      "label": "Shipping label",
+      "default": "Delivery & returns"
+    },
+    {
+      "type": "textarea",
+      "id": "shipping",
+      "label": "Shipping text",
+      "default": "Ships in 4 days. Free shipping over ₹2,499. Easy 7-day returns on unworn pieces."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product detail panels",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

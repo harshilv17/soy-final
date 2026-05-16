@@ -1,0 +1,370 @@
+{% liquid
+  assign collection = section.settings.collection
+  if collection == blank or collection.products_count == 0
+    assign collection = collections.all
+  endif
+  assign limit = section.settings.products_to_show | default: 8
+  if limit > 20
+    assign limit = 20
+  elsif limit < 4
+    assign limit = 4
+  endif
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="featured-products section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="featured-products__header page-width">
+    <h2 class="featured-products__title-row">
+      <span class="featured-products__title-text">{{ section.settings.title | escape }}</span>
+      {% if section.settings.subtitle != blank %}
+        <span class="featured-products__subtitle-text">{{ section.settings.subtitle | escape }}</span>
+      {% endif %}
+    </h2>
+  </div>
+
+  <div class="featured-products__scroll page-width">
+    <div
+      class="featured-products__track"
+      role="list"
+      aria-label="{{ section.settings.title | escape }}"
+    >
+      {% for product in collection.products limit: limit %}
+        <article class="featured-products__card" role="listitem">
+          <a class="featured-products__card-link" href="{{ product.url }}">
+            <div class="featured-products__media color-{{ section.settings.card_color_scheme }}">
+              {% if product.featured_media %}
+                {{
+                  product.featured_media
+                  | image_url: width: 800
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '200, 400, 600, 800',
+                    sizes: '(min-width: 990px) 22vw, 60vw',
+                    class: 'featured-products__image',
+                    alt: product.featured_media.alt | default: product.title | escape
+                }}
+              {% else %}
+                {{ 'product-apparel-1' | placeholder_svg_tag: 'featured-products__placeholder' }}
+              {% endif %}
+            </div>
+            <div class="featured-products__meta">
+              <h3 class="featured-products__product-title">{{ product.title | escape }}</h3>
+              <div class="featured-products__price-row">
+                <p class="featured-products__price">{{ product.price | money }}</p>
+                {% if product.compare_at_price > product.price %}
+                  <p class="featured-products__compare-price">{{ product.compare_at_price | money }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if section.settings.view_all_label != blank and section.settings.collection != blank %}
+    <div class="featured-products__cta page-width">
+      <a class="featured-products__view-all" href="{{ section.settings.collection.url }}">
+        {{ section.settings.view_all_label | escape }}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .featured-products__header {
+    text-align: center;
+    margin-block-end: var(--padding-xl);
+  }
+
+  /* One line: uppercase title + script subtitle (Great Vibes loaded in snippets/fonts.liquid) */
+  .featured-products__title-row {
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4em;
+    padding-inline: var(--padding-xs);
+    font: inherit;
+  }
+
+  .featured-products__title-text {
+    font-size: clamp(0.875rem, 2.2vw, 1.375rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    white-space: nowrap;
+    flex: 0 1 auto;
+    line-height: 1.2;
+  }
+
+  .featured-products__subtitle-text {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.375rem, 4.5vw, 2rem);
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--color-primary);
+    white-space: nowrap;
+    flex: 0 0 auto;
+    line-height: 1;
+  }
+
+  .featured-products__scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-block-end: var(--padding-xs);
+  }
+
+  .featured-products__track {
+    display: flex;
+    align-items: stretch;
+    gap: var(--padding-md);
+    padding-inline: var(--padding-2xs);
+  }
+
+  .featured-products__card {
+    flex: 0 0 min(62vw, 280px);
+    scroll-snap-align: start;
+  }
+
+  @media screen and (min-width: 750px) {
+    .featured-products__card {
+      flex-basis: min(24vw, 260px);
+    }
+  }
+
+  .featured-products__card-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--style-border-radius-cards, 10px);
+    overflow: hidden;
+    background: rgb(var(--color-background-rgb));
+    box-shadow: 0 1px 0 rgb(var(--color-border-rgb) / 0.5);
+    height: 100%;
+  }
+
+  .featured-products__card-link:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .featured-products__media {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: rgb(var(--color-background-rgb));
+    position: relative;
+  }
+
+  .featured-products__image,
+  .featured-products__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+
+  .featured-products__placeholder {
+    opacity: 0.4;
+  }
+
+  .featured-products__meta {
+    padding: var(--padding-sm) var(--padding-md) var(--padding-md);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .featured-products__image {
+    transition: transform 0.4s ease;
+  }
+
+  .featured-products__card-link:hover .featured-products__image {
+    transform: scale(1.03);
+  }
+
+  .featured-products__product-title {
+    margin: 0 0 var(--padding-2xs);
+    font-size: var(--font-size--sm);
+    font-weight: 600;
+    color: var(--color-foreground-heading);
+    line-height: 1.4;
+  }
+
+  .featured-products__price-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .featured-products__price {
+    margin: 0;
+    font-size: var(--font-size--sm);
+    font-weight: 500;
+    color: var(--color-foreground);
+  }
+
+  .featured-products__compare-price {
+    margin: 0;
+    font-size: var(--font-size--xs);
+    color: rgb(var(--color-foreground-rgb) / 0.5);
+    text-decoration: line-through;
+  }
+
+  /* View All CTA */
+  .featured-products__cta {
+    text-align: center;
+    margin-block-start: var(--padding-lg);
+  }
+
+  .featured-products__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: rgb(var(--color-foreground-rgb));
+    padding: 0.65rem 1.5rem;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
+    border-radius: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .featured-products__view-all:hover {
+    background: rgb(var(--color-foreground-rgb));
+    color: rgb(var(--color-background-rgb));
+  }
+
+  .featured-products__view-all:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .featured-products__view-all svg {
+    transition: transform 0.2s ease;
+  }
+
+  .featured-products__view-all:hover svg {
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .featured-products__image,
+    .featured-products__view-all,
+    .featured-products__view-all svg {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.featured_products_carousel",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:settings.collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "default": 8,
+      "label": "t:settings.product_count"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:settings.heading",
+      "default": "Customer favourites"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:settings.subheading",
+      "default": "Most loved"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View all label",
+      "default": "View all",
+      "info": "Leave empty to hide"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_color_scheme",
+      "label": "t:names.card",
+      "default": "scheme-2"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.featured_products_carousel"
+    }
+  ]
+}
+{% endschema %}

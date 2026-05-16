@@ -1,0 +1,606 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<footer
+  class="soy-footer section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+  role="contentinfo"
+>
+  <div class="soy-footer__inner page-width">
+    <div class="soy-footer__grid{% if section.settings.about_menu == blank %} soy-footer__grid--no-about{% endif %}">
+
+      {%- comment -%} HELP {%- endcomment -%}
+      {% if section.settings.help_menu != blank %}
+        {% assign help_links = linklists[section.settings.help_menu] %}
+        <div class="soy-footer__col">
+          <h4 class="soy-footer__heading">{{ section.settings.help_heading | escape }}</h4>
+          <nav class="soy-footer__links" aria-label="{{ section.settings.help_heading | escape }}">
+            {% for link in help_links.links %}
+              <a class="soy-footer__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+            {% endfor %}
+          </nav>
+        </div>
+      {% endif %}
+
+      {%- comment -%} CATEGORIES {%- endcomment -%}
+      {% if section.settings.categories_menu != blank %}
+        {% assign cat_links = linklists[section.settings.categories_menu] %}
+        <div class="soy-footer__col">
+          <h4 class="soy-footer__heading">{{ section.settings.categories_heading | escape }}</h4>
+          <nav class="soy-footer__links" aria-label="{{ section.settings.categories_heading | escape }}">
+            {% for link in cat_links.links %}
+              <a class="soy-footer__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+            {% endfor %}
+          </nav>
+        </div>
+      {% endif %}
+
+      {%- comment -%} CONTACT US {%- endcomment -%}
+      <div class="soy-footer__col soy-footer__col--contact">
+        <h4 class="soy-footer__heading">{{ section.settings.contact_heading | escape }}</h4>
+        <div class="soy-footer__contact">
+          {% if section.settings.email != blank or section.settings.phone != blank %}
+            <div class="soy-footer__contact-row">
+              {% if section.settings.email != blank %}
+                <div class="soy-footer__contact-item">
+                  <span class="soy-footer__contact-label">Email</span>
+                  <a class="soy-footer__contact-value" href="mailto:{{ section.settings.email | escape }}">{{ section.settings.email | escape }}</a>
+                </div>
+              {% endif %}
+              {% if section.settings.phone != blank %}
+                <div class="soy-footer__contact-item">
+                  <span class="soy-footer__contact-label">Phone</span>
+                  <a class="soy-footer__contact-value" href="tel:{{ section.settings.phone | replace: ' ', '' | escape }}">{{ section.settings.phone | escape }}</a>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+          {% if section.settings.address != blank %}
+            <div class="soy-footer__contact-item soy-footer__contact-item--address">
+              <span class="soy-footer__contact-label">Address</span>
+              <p class="soy-footer__contact-value soy-footer__address">{{ section.settings.address }}</p>
+            </div>
+          {% endif %}
+          {% if section.settings.store_location != blank %}
+            <div class="soy-footer__contact-item soy-footer__contact-item--address">
+              <span class="soy-footer__contact-label">Store Location</span>
+              <p class="soy-footer__contact-value soy-footer__address">{{ section.settings.store_location }}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {%- comment -%} MORE ABOUT {%- endcomment -%}
+      {% if section.settings.about_menu != blank %}
+        {% assign about_links = linklists[section.settings.about_menu] %}
+        <div class="soy-footer__col">
+          <h4 class="soy-footer__heading">{{ section.settings.about_heading | escape }}</h4>
+          <nav class="soy-footer__links" aria-label="{{ section.settings.about_heading | escape }}">
+            {% for link in about_links.links %}
+              <a class="soy-footer__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+            {% endfor %}
+          </nav>
+        </div>
+      {% endif %}
+
+      {%- comment -%} STAY UPDATED — newsletter {%- endcomment -%}
+      <div class="soy-footer__col soy-footer__col--newsletter">
+        <h4 class="soy-footer__heading soy-footer__heading--newsletter">{{ section.settings.newsletter_heading | escape }}</h4>
+        {% if section.settings.newsletter_text != blank %}
+          <p class="soy-footer__newsletter-text">{{ section.settings.newsletter_text | escape }}</p>
+        {% endif %}
+        {% form 'customer', id: 'soy-footer-newsletter' %}
+          <div class="soy-footer__newsletter-field">
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input
+              class="soy-footer__newsletter-input"
+              type="email"
+              name="contact[email]"
+              placeholder="{{ section.settings.newsletter_placeholder | escape }}"
+              required
+              autocomplete="email"
+              aria-label="{{ section.settings.newsletter_placeholder | escape }}"
+            >
+          </div>
+          <button class="soy-footer__newsletter-btn" type="submit">Subscribe</button>
+        {% endform %}
+      </div>
+
+    </div>
+
+    {%- comment -%} BOTTOM BAR {%- endcomment -%}
+    <div class="soy-footer__bottom">
+      <div class="soy-footer__bottom-left">
+        {% if section.settings.instagram_url != blank %}
+          <a class="soy-footer__social-link" href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </a>
+        {% endif %}
+        <p class="soy-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      </div>
+      <nav class="soy-footer__policies" aria-label="Policies">
+        <a class="soy-footer__policy-link" href="/pages/terms-conditions">Terms & Conditions</a>
+        <a class="soy-footer__policy-link" href="/pages/cancellation-policy">Cancellation Policy</a>
+        <a class="soy-footer__policy-link" href="/pages/shipping-returns">Shipping & Returns</a>
+        <a class="soy-footer__policy-link" href="/pages/privacy-policy">Privacy Policy</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .soy-footer__inner {
+    max-width: var(--normal-page-width);
+    margin-inline: auto;
+  }
+
+  /* ── Grid ── */
+  .soy-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 1.5rem;
+  }
+
+  /* Nav cols sit in the 2-col grid; contact + newsletter span full width */
+  .soy-footer__col--contact,
+  .soy-footer__col--newsletter {
+    grid-column: 1 / -1;
+  }
+
+  @media screen and (min-width: 750px) {
+    .soy-footer__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem 2rem;
+    }
+
+    .soy-footer__col--newsletter {
+      grid-column: 1 / -1;
+    }
+
+    .soy-footer__col--contact {
+      grid-column: auto;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    /* 5-col layout when all menus are set */
+    .soy-footer__grid {
+      grid-template-columns: 1.1fr 0.7fr 1.2fr 0.7fr 1.3fr;
+      gap: 2rem;
+    }
+
+    /* 4-col layout when about_menu is blank — removes empty column gap */
+    .soy-footer__grid--no-about {
+      grid-template-columns: 1fr 0.8fr 1.3fr 1.5fr;
+    }
+
+    .soy-footer__col--contact,
+    .soy-footer__col--newsletter {
+      grid-column: auto;
+    }
+  }
+
+  /* ── Heading ── */
+  .soy-footer__heading {
+    margin: 0 0 1.1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-footer__heading--newsletter {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    line-height: 1.25;
+  }
+
+  /* ── Link lists (vertical) ── */
+  .soy-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .soy-footer__link {
+    font-size: 0.8125rem;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    line-height: 1.4;
+  }
+
+  .soy-footer__link:hover {
+    color: var(--color-foreground);
+  }
+
+  .soy-footer__link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ── Contact column ── */
+  .soy-footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Email + Phone side-by-side on mobile */
+  .soy-footer__contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+  }
+
+  .soy-footer__contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .soy-footer__contact-item--address {
+    flex-direction: column;
+  }
+
+  .soy-footer__contact-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.5);
+  }
+
+  .soy-footer__contact-value {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  a.soy-footer__contact-value:hover {
+    color: var(--color-foreground);
+  }
+
+  .soy-footer__address {
+    max-width: 18rem;
+  }
+
+  /* ── Newsletter column ── */
+  .soy-footer__col--newsletter {
+    text-align: center;
+  }
+
+  @media screen and (min-width: 990px) {
+    .soy-footer__col--newsletter {
+      text-align: left;
+    }
+  }
+
+  .soy-footer__newsletter-text {
+    margin: 0 0 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  .soy-footer__newsletter-field {
+    margin-block-end: 0.75rem;
+  }
+
+  .soy-footer__newsletter-input {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.65rem 0.75rem;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    color: var(--color-foreground);
+    background: var(--color-foreground-heading);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.25);
+    border-radius: 0;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .soy-footer__newsletter-input::placeholder {
+    color: rgb(var(--color-background-rgb) / 0.5);
+  }
+
+  .soy-footer__newsletter-input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .soy-footer__newsletter-btn {
+    display: inline-block;
+    padding: 0.65rem 1.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    background: transparent;
+    border: 1px solid var(--color-foreground-heading);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .soy-footer__newsletter-btn:hover {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+  }
+
+  .soy-footer__newsletter-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  /* ── Bottom bar ── */
+  .soy-footer__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+    text-align: center;
+  }
+
+  .soy-footer__policies {
+    justify-content: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .soy-footer__bottom {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
+    }
+
+    .soy-footer__policies {
+      justify-content: flex-end;
+    }
+  }
+
+  .soy-footer__bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .soy-footer__social-link {
+    display: flex;
+    align-items: center;
+    color: var(--color-foreground);
+    transition: opacity 0.2s ease;
+  }
+
+  .soy-footer__social-link:hover {
+    opacity: 0.65;
+  }
+
+  .soy-footer__social-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .soy-footer__copyright {
+    margin: 0;
+    font-size: 0.75rem;
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+  }
+
+  /* ── Policies ── */
+  .soy-footer__policies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+  }
+
+  .soy-footer__policy-link {
+    font-size: 0.75rem;
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .soy-footer__policy-link:hover {
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  .soy-footer__policy-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .soy-footer__link,
+    .soy-footer__contact-value,
+    .soy-footer__social-link,
+    .soy-footer__newsletter-btn,
+    .soy-footer__newsletter-input,
+    .soy-footer__policy-link {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Soy Footer",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Help"
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Help heading",
+      "default": "Help"
+    },
+    {
+      "type": "link_list",
+      "id": "help_menu",
+      "label": "Help menu"
+    },
+    {
+      "type": "header",
+      "content": "Categories"
+    },
+    {
+      "type": "text",
+      "id": "categories_heading",
+      "label": "Categories heading",
+      "default": "Categories"
+    },
+    {
+      "type": "link_list",
+      "id": "categories_menu",
+      "label": "Categories menu"
+    },
+    {
+      "type": "header",
+      "content": "Contact Us"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Contact heading",
+      "default": "Contact Us"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "info@shadesofyou.co.in"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "+91 9354256072"
+    },
+    {
+      "type": "richtext",
+      "id": "address",
+      "label": "Address",
+      "default": "<p>D3, Udyog Kunj UPSIDC Industrial Area, NH24, Ghaziabad, UP 201001</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "store_location",
+      "label": "Store location",
+      "default": "<p>The Mix - By London Market, Greater Kailash 2, M Block Market (Landmark: Carnatic Cafe)</p>"
+    },
+    {
+      "type": "header",
+      "content": "More About"
+    },
+    {
+      "type": "text",
+      "id": "about_heading",
+      "label": "About heading",
+      "default": "More About Shade of You"
+    },
+    {
+      "type": "link_list",
+      "id": "about_menu",
+      "label": "About menu"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter heading",
+      "default": "Stay Updated"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Newsletter text",
+      "default": "Become a part of our mailing list to get new discount offers & updates"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Input placeholder",
+      "default": "Your email"
+    },
+    {
+      "type": "header",
+      "content": "Social & Bottom"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-5"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Soy Footer"
+    }
+  ]
+}
+{% endschema %}

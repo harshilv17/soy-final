@@ -1,0 +1,854 @@
+{%- liquid
+  assign s = section.settings
+  assign threshold = s.free_shipping_threshold | times: 100
+  assign remaining = threshold | minus: cart.total_price
+  if threshold > 0 and remaining > 0
+    assign progress = cart.total_price | times: 100 | divided_by: threshold
+  else
+    assign progress = 100
+  endif
+-%}
+
+<script src="{{ 'component-cart-items.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'component-cart-quantity-selector.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'volume-pricing-info.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'cart-discount.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{%- capture empty_cart -%}
+  <div class="soy-cart__empty">
+    <span class="soy-cart__eyebrow">{{ s.eyebrow }}</span>
+    <h1 class="soy-cart__title">{{ s.title }}</h1>
+    <p class="soy-cart__empty-text">{{ s.empty_text }}</p>
+    {%- if shop.customer_accounts_enabled and customer == null -%}
+      <p>{{ 'actions.log_in_html' | t: link: routes.account_login_url }}</p>
+    {%- endif -%}
+    <a class="soy-cart__checkout" href="{{ settings.empty_cart_button_link | default: routes.all_products_collection_url }}">
+      {{ 'actions.continue_shopping' | t }}
+    </a>
+  </div>
+{%- endcapture -%}
+
+<cart-items-component
+  class="cart-items-component soy-cart-section section color-{{ s.color_scheme }}"
+  data-section-id="{{ section.id }}"
+  style="--soy-cart-pt:{{ s['padding-block-start'] }}px;--soy-cart-pb:{{ s['padding-block-end'] }}px;"
+>
+  <template id="empty-cart-template">
+    <div class="soy-cart soy-cart--empty">{{ empty_cart }}</div>
+  </template>
+
+  {% # theme-check-disable UniqueStaticBlockId %}
+  {%- if cart.empty? -%}
+    <div class="soy-cart soy-cart--empty">{{ empty_cart }}</div>
+  {%- else -%}
+    <div class="soy-cart">
+      <span class="visually-hidden" ref="cartItemCount" aria-hidden="true">{{ cart.item_count }}</span>
+
+      <header class="soy-cart__head">
+        <a class="soy-cart__back" href="{{ routes.all_products_collection_url }}" aria-label="{{ 'actions.continue_shopping' | t }}">
+          {{- 'icon-chevron-left.svg' | inline_asset_content -}}
+        </a>
+        <div class="soy-cart__head-text">
+          <span class="soy-cart__eyebrow">{{ s.eyebrow }}</span>
+          <h1 class="soy-cart__title">{{ s.title }}</h1>
+          <p class="soy-cart__count">{{ cart.item_count }} {% if cart.item_count == 1 %}{{ s.unit_singular }}{% else %}{{ s.unit_plural }}{% endif %}</p>
+        </div>
+        <span class="soy-cart__back soy-cart__back--ghost" aria-hidden="true"></span>
+      </header>
+
+      {%- if threshold > 0 -%}
+        <div class="soy-cart__shipping">
+          <p class="soy-cart__shipping-text">
+            {%- if remaining > 0 -%}
+              <strong>{{ remaining | money }}</strong> {{ s.shipping_away_text }}
+            {%- else -%}
+              {{ s.shipping_unlocked_text }}
+            {%- endif -%}
+          </p>
+          <div class="soy-cart__bar"><span style="width:{{ progress }}%;"></span></div>
+        </div>
+      {%- endif -%}
+
+      <form action="{{ routes.cart_url }}" id="cart-form" method="post" class="soy-cart__card">
+        <ul class="soy-cart__items" role="list">
+          {%- for item in cart.items -%}
+            <li
+              class="soy-cart__item"
+              ref="cartItemRows[]"
+              data-key="{{ item.key }}"
+              data-parent-key="{{ item.parent_relationship.parent.key }}"
+            >
+              <a class="soy-cart__thumb" href="{{ item.url }}">
+                {%- if item.image -%}
+                  {{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120,240', alt: item.title | escape }}
+                {%- endif -%}
+              </a>
+              <div class="soy-cart__info">
+                <a class="soy-cart__name" href="{{ item.url }}">{{ item.product.title }}</a>
+
+                {%- unless item.product.has_only_default_variant -%}
+                  <p class="soy-cart__variant">
+                    {%- for opt in item.options_with_values -%}
+                      {{ opt.name }} {{ opt.value }}{%- unless forloop.last -%}, {% endunless -%}
+                    {%- endfor -%}
+                  </p>
+                {%- endunless -%}
+
+                {%- for property in item.properties -%}
+                  {%- assign first_char = property.first | slice: 0 -%}
+                  {%- if property.last != blank and first_char != '_' -%}
+                    <p class="soy-cart__custom">
+                      {{- 'icon-arrow.svg' | inline_asset_content -}}
+                      <span>{{ property.first }}: {{ property.last }}</span>
+                    </p>
+                  {%- endif -%}
+                {%- endfor -%}
+
+                {%- if item.selling_plan_allocation -%}
+                  <p class="soy-cart__variant">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                {%- endif -%}
+
+                <div class="soy-cart__item-foot">
+                  {%- assign can_update = item.instructions.can_update_quantity | default: true, allow_false: true -%}
+                  {% render 'quantity-selector',
+                    product: item.product,
+                    variant: item.variant,
+                    in_cart_quantity: item.quantity,
+                    line_index: item.index,
+                    can_update_quantity: can_update
+                  %}
+                  <button
+                    type="button"
+                    class="soy-cart__remove button-unstyled"
+                    on:click="/onLineItemRemove/{{ item.index | plus: 1 }}"
+                    aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
+                  >
+                    {{- 'icon-delete.svg' | inline_asset_content -}}
+                  </button>
+                </div>
+
+                <div class="soy-cart__item-error hidden" ref="cartItemErrorContainer-{{ item.index | plus: 1 }}" role="alert">
+                  <span class="svg-wrapper">{{- 'icon-error.svg' | inline_asset_content -}}</span>
+                  <small ref="cartItemError-{{ item.index | plus: 1 }}"></small>
+                </div>
+              </div>
+              <div class="soy-cart__price">
+                {%- if item.original_line_price != item.final_line_price -%}
+                  <s>{{ item.original_line_price | money }}</s>
+                  <text-component value="{{ item.final_line_price | money | strip_html }}">{{ item.final_line_price | money }}</text-component>
+                {%- else -%}
+                  <text-component value="{{ item.original_line_price | money | strip_html }}">{{ item.original_line_price | money }}</text-component>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if settings.show_add_discount_code -%}
+          {%- liquid
+            assign discount_codes = cart.cart_level_discount_applications | where: 'type', 'discount_code' | map: 'title' | uniq
+          -%}
+          <cart-discount-component data-section-id="{{ section.id }}" class="soy-cart__promo">
+            <form on:submit="/applyDiscount" onsubmit="return false;" class="soy-cart__promo-form">
+              <span class="soy-cart__promo-icon">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+              <label for="cart-discount" class="visually-hidden">{{ 'accessibility.discount' | t }}</label>
+              <input id="cart-discount" type="text" name="discount" placeholder="{{ s.promo_placeholder }}" required>
+              <button type="submit" class="soy-cart__promo-apply">{{ 'actions.apply' | t }}</button>
+            </form>
+            <div class="soy-cart__promo-error hidden" role="alert" ref="cartDiscountError">
+              <span class="svg-wrapper">{{- 'icon-error.svg' | inline_asset_content -}}</span>
+              <small class="hidden" ref="cartDiscountErrorDiscountCode">{{ 'content.discount_code_error' | t: code: 'test' }}</small>
+              <small class="hidden" ref="cartDiscountErrorShipping">{{ 'content.shipping_discount_error' | t }}</small>
+            </div>
+            <ul class="soy-cart__promo-codes">
+              {%- for code in discount_codes -%}
+                <li class="soy-cart__promo-pill" data-discount-code="{{ code }}">
+                  <span>{{ code }}</span>
+                  <button type="button" on:click="/removeDiscount" class="button-unstyled" aria-label="{{ 'actions.remove_discount' | t: code: code }}">
+                    {{- 'icon-filters-close.svg' | inline_asset_content -}}
+                  </button>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </cart-discount-component>
+        {%- endif -%}
+
+        {%- assign pair = s.pair_collection -%}
+        {%- if pair != blank and pair.products.size > 0 -%}
+          <div class="soy-cart__pair">
+            <span class="soy-cart__pair-head">{{ s.pair_heading }}</span>
+            <div class="soy-cart__pair-grid">
+              {%- for product in pair.products limit: 3 -%}
+                <a class="soy-cart__pair-card" href="{{ product.url }}">
+                  <span class="soy-cart__pair-img">
+                    {%- if product.featured_image -%}
+                      {{ product.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: product.title | escape }}
+                    {%- endif -%}
+                  </span>
+                  <span class="soy-cart__pair-name">{{ product.title }}</span>
+                  <span class="soy-cart__pair-price">{{ product.price | money }}</span>
+                </a>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <div class="soy-cart__totals">
+          <div class="soy-cart__row">
+            <span>{{ 'content.cart_subtotal' | t | default: 'Subtotal' }}</span>
+            <span>{{ cart.items_subtotal_price | money }}</span>
+          </div>
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <div class="soy-cart__row soy-cart__row--discount">
+              <span>{{ discount.title | escape }}</span>
+              <span>−{{ discount.total_allocated_amount | money }}</span>
+            </div>
+          {%- endfor -%}
+          <div class="soy-cart__row soy-cart__row--note">
+            <span>{{ s.shipping_label }}</span>
+            <span>{{ s.shipping_value }}</span>
+          </div>
+          <div class="soy-cart__row soy-cart__row--total">
+            <span>{{ 'content.cart_estimated_total' | t | default: 'Total' }}</span>
+            <text-component ref="cartTotal" value="{{ cart.total_price | money | strip_html }}" data-cart-subtotal>
+              {{ cart.total_price | money }}
+            </text-component>
+          </div>
+        </div>
+
+        <button type="submit" id="checkout" name="checkout" form="cart-form" class="soy-cart__checkout">
+          <span class="button-text">{{ s.checkout_label }}</span>
+          {{- 'icon-arrow.svg' | inline_asset_content -}}
+        </button>
+
+        {%- if s.payment_note != blank -%}
+          <p class="soy-cart__pay">{{ s.payment_note }}</p>
+        {%- endif -%}
+      </form>
+    </div>
+  {%- endif -%}
+  {% # theme-check-enable UniqueStaticBlockId %}
+</cart-items-component>
+
+{% stylesheet %}
+  .soy-cart-section {
+    display: block;
+    padding-block: var(--soy-cart-pt, 0) var(--soy-cart-pb, 0);
+  }
+
+  .soy-cart {
+    width: 100%;
+    max-width: 620px;
+    margin-inline: auto;
+    padding-inline: var(--page-margin, 20px);
+    box-sizing: border-box;
+  }
+
+  .soy-cart__head {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    padding-block: var(--padding-lg, 16px);
+  }
+
+  .soy-cart__back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--color-foreground);
+  }
+
+  .soy-cart__back svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .soy-cart__head-text {
+    text-align: center;
+  }
+
+  .soy-cart__eyebrow {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  .soy-cart__title {
+    margin: 0.1em 0 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.6rem, 6vw, 2.1rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .soy-cart__count {
+    margin: 0.25em 0 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    opacity: 0.6;
+  }
+
+  .soy-cart__shipping {
+    margin-block: var(--margin-sm, 8px) var(--margin-lg, 16px);
+  }
+
+  .soy-cart__shipping-text {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+  }
+
+  .soy-cart__shipping-text strong {
+    font-weight: 600;
+  }
+
+  .soy-cart__bar {
+    height: 4px;
+    border-radius: 4px;
+    background: rgb(var(--color-foreground-rgb) / 0.12);
+    overflow: hidden;
+  }
+
+  .soy-cart__bar span {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--color-primary, var(--color-foreground));
+    transition: width var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .soy-cart__card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .soy-cart__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .soy-cart__item {
+    display: grid;
+    grid-template-columns: 84px 1fr auto;
+    gap: var(--gap-md, 14px);
+    align-items: start;
+    padding-block: var(--padding-xl, 20px);
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+  }
+
+  .soy-cart__thumb {
+    display: block;
+    width: 84px;
+    aspect-ratio: 4 / 5;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .soy-cart__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .soy-cart__info {
+    min-width: 0;
+  }
+
+  .soy-cart__name {
+    font-family: var(--font-heading--family);
+    font-size: 1rem;
+    font-weight: 400;
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+
+  .soy-cart__variant {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+
+  .soy-cart__custom {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 5px 0 0;
+    font-size: 0.78rem;
+    color: var(--color-primary, var(--color-foreground));
+  }
+
+  .soy-cart__custom svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .soy-cart__item-foot {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md, 12px);
+    margin-top: var(--margin-md, 12px);
+  }
+
+  .soy-cart__remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--color-foreground);
+    opacity: 0.5;
+    cursor: pointer;
+  }
+
+  .soy-cart__remove:hover {
+    opacity: 1;
+  }
+
+  .soy-cart__remove svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .soy-cart__price {
+    text-align: right;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .soy-cart__price s {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.5;
+  }
+
+  .soy-cart__item-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--color-error, #c0392b);
+  }
+
+  .soy-cart__item-error .svg-wrapper {
+    width: 14px;
+    height: 14px;
+  }
+
+  .soy-cart__item-error.hidden {
+    display: none;
+  }
+
+  /* Promo */
+  .soy-cart__promo {
+    display: block;
+    margin-top: var(--margin-xl, 20px);
+  }
+
+  .soy-cart__promo-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px 6px 14px;
+    border: 1px dashed rgb(var(--color-foreground-rgb) / 0.3);
+    border-radius: 8px;
+  }
+
+  .soy-cart__promo-icon {
+    display: flex;
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+  }
+
+  .soy-cart__promo-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .soy-cart__promo-form input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    color: var(--color-foreground);
+  }
+
+  .soy-cart__promo-form input:focus {
+    outline: none;
+  }
+
+  .soy-cart__promo-apply {
+    border: none;
+    background: transparent;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-primary, var(--color-foreground));
+    cursor: pointer;
+    padding: 8px 10px;
+  }
+
+  .soy-cart__promo-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--color-error, #c0392b);
+  }
+
+  .soy-cart__promo-error.hidden {
+    display: none;
+  }
+
+  .soy-cart__promo-error .svg-wrapper {
+    width: 14px;
+    height: 14px;
+  }
+
+  .soy-cart__promo-codes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+  }
+
+  .soy-cart__promo-codes:empty {
+    display: none;
+  }
+
+  .soy-cart__promo-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgb(var(--color-foreground-rgb) / 0.08);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .soy-cart__promo-pill button {
+    display: flex;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    opacity: 0.5;
+  }
+
+  /* Pair with */
+  .soy-cart__pair {
+    margin-top: var(--margin-2xl, 28px);
+  }
+
+  .soy-cart__pair-head {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: 12px;
+  }
+
+  .soy-cart__pair-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap-sm, 10px);
+  }
+
+  .soy-cart__pair-card {
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+
+  .soy-cart__pair-img {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+    margin-bottom: 6px;
+  }
+
+  .soy-cart__pair-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .soy-cart__pair-name {
+    display: block;
+    font-size: 0.8rem;
+  }
+
+  .soy-cart__pair-price {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+
+  /* Totals */
+  .soy-cart__totals {
+    margin-top: var(--margin-2xl, 28px);
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+    padding-top: var(--padding-lg, 16px);
+  }
+
+  .soy-cart__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+
+  .soy-cart__row--discount {
+    color: var(--color-primary, var(--color-foreground));
+  }
+
+  .soy-cart__row--total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+    font-size: 1rem;
+  }
+
+  .soy-cart__row--total span:first-child {
+    font-family: var(--font-heading--family);
+    font-size: 1.25rem;
+  }
+
+  .soy-cart__row--total text-component {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .soy-cart__checkout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: var(--margin-lg, 16px);
+    padding: 16px 20px;
+    border: none;
+    border-radius: 6px;
+    background: var(--color-primary-button-background, var(--color-foreground));
+    color: var(--color-primary-button-text, var(--color-background));
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .soy-cart__checkout svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .soy-cart__checkout:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .soy-cart__pay {
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  /* Empty */
+  .soy-cart--empty {
+    text-align: center;
+    padding-block: var(--padding-4xl, 48px);
+  }
+
+  .soy-cart__empty-text {
+    margin: var(--margin-lg, 16px) 0;
+    opacity: 0.65;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  @media screen and (min-width: 750px) {
+    .soy-cart__item {
+      grid-template-columns: 96px 1fr auto;
+    }
+
+    .soy-cart__thumb {
+      width: 96px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.cart",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "Cart"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Your bag"
+    },
+    {
+      "type": "text",
+      "id": "unit_singular",
+      "label": "Item count word (singular)",
+      "default": "piece"
+    },
+    {
+      "type": "text",
+      "id": "unit_plural",
+      "label": "Item count word (plural)",
+      "default": "pieces"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty cart message",
+      "default": "Your bag is empty"
+    },
+    {
+      "type": "header",
+      "content": "Free shipping bar"
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free shipping threshold (set 0 to hide)",
+      "default": 2499
+    },
+    {
+      "type": "text",
+      "id": "shipping_away_text",
+      "label": "Away text",
+      "default": "away from free shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_unlocked_text",
+      "label": "Unlocked text",
+      "default": "You've unlocked free shipping"
+    },
+    {
+      "type": "header",
+      "content": "Promo code"
+    },
+    {
+      "type": "text",
+      "id": "promo_placeholder",
+      "label": "Promo placeholder",
+      "default": "Promo code (BATIK10 for first order)"
+    },
+    {
+      "type": "header",
+      "content": "Pair with"
+    },
+    {
+      "type": "text",
+      "id": "pair_heading",
+      "label": "Heading",
+      "default": "Pair with"
+    },
+    {
+      "type": "collection",
+      "id": "pair_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "header",
+      "content": "Totals"
+    },
+    {
+      "type": "text",
+      "id": "shipping_label",
+      "label": "Shipping row label",
+      "default": "Shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_value",
+      "label": "Shipping row value",
+      "default": "Calculated at checkout"
+    },
+    {
+      "type": "text",
+      "id": "checkout_label",
+      "label": "Checkout button label",
+      "default": "Checkout securely"
+    },
+    {
+      "type": "text",
+      "id": "payment_note",
+      "label": "Payment methods note",
+      "default": "UPI · CARDS · COD · EMI"
+    },
+    {
+      "type": "header",
+      "content": "t:content.section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    }
+  ]
+}
+{% endschema %}

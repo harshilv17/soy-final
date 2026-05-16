@@ -1,0 +1,132 @@
+{% doc %}
+  Fixed bottom navigation for small screens (Shades of You). Uses theme icons and opens search modal / cart drawer when available.
+
+  @example
+  {% render 'mobile-bottom-nav' %}
+{% enddoc %}
+
+<nav class="mobile-bottom-nav color-scheme-2" aria-label="{{ 'accessibility.mobile_quick_links' | t }}">
+  <ul class="mobile-bottom-nav__list">
+    <li>
+      <a class="mobile-bottom-nav__link" href="{{ routes.root_url }}">
+        <span class="svg-wrapper mobile-bottom-nav__icon" aria-hidden="true">
+          {{- 'icon-grid-default.svg' | inline_asset_content -}}
+        </span>
+        <span>Home</span>
+      </a>
+    </li>
+    <li>
+      <button
+        type="button"
+        class="mobile-bottom-nav__link mobile-bottom-nav__button"
+        on:click="#search-modal/showDialog"
+        aria-haspopup="dialog"
+        aria-label="{{ 'content.search_input_label' | t }}"
+      >
+        <span class="svg-wrapper mobile-bottom-nav__icon" aria-hidden="true">
+          {{- 'icon-search.svg' | inline_asset_content -}}
+        </span>
+        <span>{{ 'content.search' | t }}</span>
+      </button>
+    </li>
+    <li>
+      <button
+        type="button"
+        class="mobile-bottom-nav__link mobile-bottom-nav__button"
+        onclick="document.querySelector('cart-drawer-component')?.open?.()"
+        aria-label="{{ 'accessibility.cart' | t }}"
+      >
+        <span class="svg-wrapper mobile-bottom-nav__icon" aria-hidden="true">
+          {{- 'icon-cart.svg' | inline_asset_content -}}
+        </span>
+        <span>{{ 'content.cart_title' | t }}</span>
+      </button>
+    </li>
+    <li>
+      {% if shop.customer_accounts_enabled %}
+        <a class="mobile-bottom-nav__link" href="{{ routes.account_url }}">
+          <span class="svg-wrapper mobile-bottom-nav__icon" aria-hidden="true">
+            {{- 'icon-account.svg' | inline_asset_content -}}
+          </span>
+          <span>{{ 'content.account_title' | t }}</span>
+        </a>
+      {% else %}
+        <a class="mobile-bottom-nav__link" href="{{ routes.account_login_url }}">
+          <span class="svg-wrapper mobile-bottom-nav__icon" aria-hidden="true">
+            {{- 'icon-account.svg' | inline_asset_content -}}
+          </span>
+          <span>{{ 'actions.log_in' | t }}</span>
+        </a>
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+
+{% stylesheet %}
+  .mobile-bottom-nav {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .mobile-bottom-nav {
+      display: block;
+      position: fixed;
+      z-index: calc(var(--layer-sticky, 20) + 2);
+      inset-inline: 0;
+      inset-block-end: 0;
+      padding-block: var(--padding-sm) calc(var(--padding-sm) + env(safe-area-inset-bottom, 0px));
+      padding-inline: var(--padding-sm);
+      background: rgb(var(--color-background-rgb));
+      border-block-start: 1px solid rgb(var(--color-border-rgb) / 0.5);
+      box-shadow: 0 -4px 20px rgb(var(--color-shadow-rgb) / 0.08);
+    }
+
+    body:has(.mobile-bottom-nav) main.content-for-layout {
+      padding-block-end: calc(5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .mobile-bottom-nav__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--padding-2xs);
+      text-align: center;
+    }
+
+    .mobile-bottom-nav__link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--padding-3xs);
+      min-height: 44px;
+      justify-content: center;
+      font-size: 0.6875rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: var(--color-foreground);
+      background: none;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .mobile-bottom-nav__link:focus-visible {
+      outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    .mobile-bottom-nav__icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .mobile-bottom-nav__icon svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+{% endstylesheet %}

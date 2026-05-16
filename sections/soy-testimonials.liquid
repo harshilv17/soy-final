@@ -1,0 +1,700 @@
+{% liquid
+  assign current_handle = product.handle | default: ''
+  assign has_specific_blocks = false
+  for block in section.blocks
+    if block.type == 'review'
+      assign block_handle = block.settings.product_handle | strip
+      if block_handle == current_handle and current_handle != blank
+        assign has_specific_blocks = true
+        break
+      endif
+    endif
+  endfor
+  assign matching_blocks = 0
+  for block in section.blocks
+    if block.type == 'review'
+      assign block_handle = block.settings.product_handle | strip
+      if has_specific_blocks
+        if block_handle == current_handle
+          assign matching_blocks = matching_blocks | plus: 1
+        endif
+      else
+        if block_handle == blank
+          assign matching_blocks = matching_blocks | plus: 1
+        endif
+      endif
+    endif
+  endfor
+%}
+
+{% if matching_blocks > 0 %}
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="soy-testimonials section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="soy-testimonials__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="soy-testimonials__heading">
+        <span class="soy-testimonials__heading-primary">{{ section.settings.heading | escape }}</span>
+        {% if section.settings.heading_script != blank %}
+          <span class="soy-testimonials__heading-script">{{ section.settings.heading_script | escape }}</span>
+        {% endif %}
+      </h2>
+    {% endif %}
+
+    {% if matching_blocks > 0 %}
+      <div
+        class="soy-testimonials__slider"
+        id="soy-testimonials-{{ section.id }}"
+        data-section-id="{{ section.id }}"
+      >
+        <div class="soy-testimonials__viewport">
+          <div class="soy-testimonials__track">
+            {% for block in section.blocks %}
+              {% liquid
+                assign block_handle = block.settings.product_handle | strip
+                assign show_block = false
+                if has_specific_blocks
+                  if block_handle == current_handle
+                    assign show_block = true
+                  endif
+                else
+                  if block_handle == blank
+                    assign show_block = true
+                  endif
+                endif
+              %}
+              {% if show_block %}
+              <div
+                class="soy-testimonials__slide"
+                aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                {% liquid
+                assign has_photo = false
+                if block.settings.image != blank or block.settings.asset_filename != blank
+                  assign has_photo = true
+                endif
+              %}
+              <div class="soy-testimonials__card{% unless has_photo %} soy-testimonials__card--text-only{% endunless %}">
+                {% if has_photo %}
+                  <div class="soy-testimonials__photo-wrap">
+                    {% if block.settings.image != blank %}
+                      {{
+                        block.settings.image
+                        | image_url: width: 800
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '300, 500, 800',
+                          sizes: '(min-width: 990px) 30vw, 80vw',
+                          class: 'soy-testimonials__photo',
+                          alt: block.settings.name | default: 'Customer photo' | escape
+                      }}
+                    {% else %}
+                      <img
+                        class="soy-testimonials__photo"
+                        src="{{ block.settings.asset_filename | asset_url }}"
+                        alt="{{ block.settings.name | default: 'Customer photo' | escape }}"
+                        loading="lazy"
+                        width="600"
+                        height="800"
+                      >
+                    {% endif %}
+                  </div>
+                {% endif %}
+
+                  <div class="soy-testimonials__content">
+                    {% if block.settings.quote != blank %}
+                      <p class="soy-testimonials__quote">{{ block.settings.quote | escape }}</p>
+                    {% endif %}
+
+                    {% if block.settings.body != blank %}
+                      <p class="soy-testimonials__body">{{ block.settings.body | escape }}</p>
+                    {% endif %}
+
+                    {% if block.settings.name != blank %}
+                      <p class="soy-testimonials__name">
+                        {{ block.settings.name | escape }}
+                        <span class="soy-testimonials__verified" aria-label="Verified buyer">
+                          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M6.5 10.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </span>
+                      </p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if matching_blocks > 1 %}
+          <div class="soy-testimonials__nav">
+            <button
+              class="soy-testimonials__btn soy-testimonials__btn--prev"
+              aria-label="Previous review"
+              data-slider="{{ section.id }}"
+              data-dir="-1"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button
+              class="soy-testimonials__btn soy-testimonials__btn--next"
+              aria-label="Next review"
+              data-slider="{{ section.id }}"
+              data-dir="1"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+  (function () {
+    var sliderId = '{{ section.id }}';
+    var slider = document.getElementById('soy-testimonials-' + sliderId);
+    if (!slider) return;
+
+    var viewport = slider.querySelector('.soy-testimonials__viewport');
+    var track = slider.querySelector('.soy-testimonials__track');
+    var slides = Array.from(slider.querySelectorAll('.soy-testimonials__slide'));
+    var total = slides.length;
+    var current = 0;
+    var autoTimer = null;
+    var AUTO_INTERVAL = 6000;
+
+    function visibleCount() {
+      return window.innerWidth >= 990 ? 4 : 1;
+    }
+
+    function maxIndex() {
+      return Math.max(0, total - visibleCount());
+    }
+
+    function stepPx() {
+      if (!slides[0]) return 0;
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 24;
+      return slides[0].offsetWidth + gap;
+    }
+
+    /* Set each slide to the exact pixel width of the scroll container,
+       bypassing all CSS percentage-resolution circular dependencies. */
+    function setSlideWidths() {
+      var w = viewport.clientWidth;
+      if (!w) return;
+      var visible = visibleCount();
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 24;
+      var slideW = visible === 1 ? w : Math.floor((w - gap * (visible - 1)) / visible);
+      slides.forEach(function (s) { s.style.flexBasis = slideW + 'px'; });
+    }
+
+    function goTo(index) {
+      var max = maxIndex();
+      current = ((index % (max + 1)) + (max + 1)) % (max + 1);
+      viewport.scrollTo({ left: current * stepPx(), behavior: 'smooth' });
+      updateAria();
+    }
+
+    function updateAria() {
+      var visible = visibleCount();
+      slides.forEach(function (s, i) {
+        s.setAttribute('aria-hidden', (i >= current && i < current + visible) ? 'false' : 'true');
+      });
+    }
+
+    function startAuto() {
+      stopAuto();
+      autoTimer = setInterval(function () {
+        goTo(current >= maxIndex() ? 0 : current + 1);
+      }, AUTO_INTERVAL);
+    }
+
+    function stopAuto() {
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+
+    viewport.addEventListener('mouseenter', stopAuto);
+    viewport.addEventListener('mouseleave', startAuto);
+
+    document.querySelectorAll('[data-slider="{{ section.id }}"]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        stopAuto();
+        goTo(current + parseInt(this.dataset.dir, 10));
+        startAuto();
+      });
+    });
+
+    /* sync current index when user swipes natively */
+    viewport.addEventListener('scrollend', function () {
+      var step = stepPx();
+      if (step > 0) current = Math.round(viewport.scrollLeft / step);
+      updateAria();
+    });
+
+    requestAnimationFrame(function () {
+      setSlideWidths();
+      updateAria();
+      startAuto();
+    });
+
+    window.addEventListener('resize', function () {
+      setSlideWidths();
+      goTo(current);
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  /* Prevent any overflowing slide from widening the page */
+  .soy-testimonials {
+    overflow-x: clip;
+  }
+
+  .soy-testimonials__inner {
+    padding-inline: var(--padding-md);
+  }
+
+  .soy-testimonials__heading {
+    margin: 0 0 var(--padding-xl);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4em;
+    font: inherit;
+    text-align: center;
+  }
+
+  .soy-testimonials__heading-primary {
+    font-family: var(--font-body--family);
+    font-size: clamp(0.875rem, 2.2vw, 1.375rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    line-height: 1.2;
+  }
+
+  .soy-testimonials__heading-script {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.375rem, 4.5vw, 2rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--color-primary);
+    line-height: 1.1;
+  }
+
+  /* Slider — scroll-snap approach: the scroll container gives slides a
+     definite width, so flex-basis:100% resolves correctly with no
+     circular dependency on content size. */
+  .soy-testimonials__slider {
+    position: relative;
+  }
+
+  .soy-testimonials__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .soy-testimonials__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .soy-testimonials__track {
+    display: flex;
+    gap: 24px;
+  }
+
+  /* Mobile: one card at a time */
+  .soy-testimonials__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  /* Desktop: three cards fit in the viewport — no scroll needed */
+  @media screen and (min-width: 990px) {
+    .soy-testimonials__viewport {
+      overflow-x: hidden;
+      scroll-snap-type: none;
+    }
+
+    .soy-testimonials__photo-wrap {
+      aspect-ratio: unset;
+      height: 340px;
+    }
+
+    .soy-testimonials__body {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  /* Card */
+  .soy-testimonials__card {
+    background: var(--color-background);
+    border-radius: var(--style-border-radius-cards, 12px);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgb(0 0 0 / 0.07);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .soy-testimonials__photo-wrap {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .soy-testimonials__photo {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .soy-testimonials__slide:hover .soy-testimonials__photo {
+    transform: scale(1.03);
+  }
+
+  .soy-testimonials__photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgb(var(--color-foreground-rgb) / 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .soy-testimonials__placeholder-svg {
+    width: 30%;
+    height: auto;
+    opacity: 0.15;
+  }
+
+  .soy-testimonials__content {
+    flex: 1;
+    padding: var(--padding-lg) var(--padding-xl) var(--padding-xl);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 3px solid var(--color-primary);
+    position: relative;
+  }
+
+  .soy-testimonials__stars {
+    display: flex;
+    justify-content: center;
+    gap: 0.2em;
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    margin-block-end: var(--padding-sm);
+    line-height: 1;
+    order: -1;
+    padding-block-start: var(--padding-sm);
+  }
+
+  .soy-testimonials__star--empty {
+    opacity: 0.2;
+  }
+
+  .soy-testimonials__quote {
+    margin: 0 0 var(--padding-sm);
+    font-family: var(--font-body--family);
+    font-size: clamp(0.9375rem, 2vw, 1rem);
+    font-weight: 600;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: var(--color-foreground-heading);
+    line-height: 1.4;
+  }
+
+  .soy-testimonials__body {
+    margin: 0 0 var(--padding-md);
+    font-size: var(--font-size--sm);
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    line-height: 1.7;
+  }
+
+  .soy-testimonials__name {
+    margin: auto 0 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+    padding-block-start: var(--padding-sm);
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    width: 100%;
+    justify-content: center;
+  }
+
+  .soy-testimonials__verified {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-primary);
+  }
+
+  .soy-testimonials__verified svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  .soy-testimonials__nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--padding-sm);
+    margin-block-start: var(--padding-lg);
+  }
+
+  .soy-testimonials__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1.5px solid rgb(var(--color-foreground-rgb) / 0.2);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .soy-testimonials__btn:hover {
+    border-color: var(--color-foreground);
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .soy-testimonials__btn svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .soy-testimonials__card--text-only {
+    justify-content: center;
+  }
+
+  .soy-testimonials__card--text-only .soy-testimonials__content {
+    border-top: none;
+    padding-block-start: var(--padding-xl);
+    border-radius: var(--style-border-radius-cards, 12px);
+  }
+
+  /* ── Mobile: keep vertical layout, cap photo height ───────────
+     Image stays on top, text below — just shorter so the whole
+     card fits on screen (~380 px total). */
+  @media screen and (max-width: 989px) {
+    .soy-testimonials__photo-wrap {
+      aspect-ratio: 3 / 4;
+      height: auto;
+    }
+
+
+
+    .soy-testimonials__body {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .soy-testimonials__viewport {
+      scroll-behavior: auto;
+    }
+    .soy-testimonials__photo {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "tag": "section",
+  "class": "section-wrapper",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What our"
+    },
+    {
+      "type": "text",
+      "id": "heading_script",
+      "label": "Script heading",
+      "default": "Customers say",
+      "info": "Displayed in cursive accent font"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_photo",
+      "label": "Show customer photos",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo",
+          "info": "Upload via image picker, or use asset filename below"
+        },
+        {
+          "type": "text",
+          "id": "asset_filename",
+          "label": "Asset filename",
+          "info": "e.g. soy-review-vidhisha.webp — used if no image picked above"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "quote",
+          "label": "Bold headline quote",
+          "default": "Absolutely love it!"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Review body"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name"
+        },
+        {
+          "type": "text",
+          "id": "product_handle",
+          "label": "Product handle",
+          "info": "Leave blank to show on all products. Enter a product handle (e.g. aqua-play-dress) to show only on that product."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "asset_filename": "soy-review-vidhisha.webp",
+            "rating": 5,
+            "quote": "Absolutely love it!",
+            "body": "The fabric is so soft and the print is even more beautiful in person. Got so many compliments the first time I wore it.",
+            "name": "Vidhisha"
+          }
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "asset_filename": "soy-review-sugandha.webp",
+            "rating": 5,
+            "quote": "Worth every rupee",
+            "body": "I was a little hesitant to order online but the quality blew me away. The batik work is so detailed and the fit is perfect.",
+            "name": "Sugandha"
+          }
+        },
+        "review_3": {
+          "type": "review",
+          "settings": {
+            "asset_filename": "soy-review-aditi.webp",
+            "rating": 5,
+            "quote": "My go-to brand now",
+            "body": "Ordered twice already and will keep coming back. The customisation option is a huge plus — finally clothes that fit exactly right.",
+            "name": "Aditi"
+          }
+        }
+      },
+      "block_order": ["review_1", "review_2", "review_3"]
+    }
+  ]
+}
+{% endschema %}

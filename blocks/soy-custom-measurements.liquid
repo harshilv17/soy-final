@@ -1,0 +1,231 @@
+{% liquid
+  assign product = closest.product
+  if product == blank
+    break
+  endif
+%}
+
+<soy-custom-measurements
+  class="soy-measurements"
+  {{ block.shopify_attributes }}
+>
+  <div class="soy-measurements__wrap" ref="wrap" hidden>
+    <div class="soy-measurements__header">
+      <h4 class="soy-measurements__title">Customise your fit</h4>
+      <p class="soy-measurements__note">Share your alteration needs for size <strong ref="sizeLabel"></strong></p>
+    </div>
+
+    <div class="soy-measurements__fields">
+      <label class="soy-measurements__field">
+        <span class="soy-measurements__label">Bust (inches)</span>
+        <input
+          class="soy-measurements__input"
+          type="text"
+          ref="bust"
+          inputmode="decimal"
+          placeholder="e.g. 36"
+          autocomplete="off"
+        >
+      </label>
+
+      <label class="soy-measurements__field">
+        <span class="soy-measurements__label">Waist (inches)</span>
+        <input
+          class="soy-measurements__input"
+          type="text"
+          ref="waist"
+          inputmode="decimal"
+          placeholder="e.g. 30"
+          autocomplete="off"
+        >
+      </label>
+
+      <label class="soy-measurements__field">
+        <span class="soy-measurements__label">Hip (inches)</span>
+        <input
+          class="soy-measurements__input"
+          type="text"
+          ref="hip"
+          inputmode="decimal"
+          placeholder="e.g. 38"
+          autocomplete="off"
+        >
+      </label>
+
+      <label class="soy-measurements__field">
+        <span class="soy-measurements__label">Length (inches)</span>
+        <input
+          class="soy-measurements__input"
+          type="text"
+          ref="length"
+          inputmode="decimal"
+          placeholder="e.g. 42"
+          autocomplete="off"
+        >
+      </label>
+    </div>
+
+    <label class="soy-measurements__field soy-measurements__field--full">
+      <span class="soy-measurements__label">Alteration notes</span>
+      <textarea
+        class="soy-measurements__input soy-measurements__textarea"
+        ref="notes"
+        rows="2"
+        placeholder="e.g. Shorten sleeves by 1 inch, take in waist slightly"
+      ></textarea>
+    </label>
+  </div>
+</soy-custom-measurements>
+
+{% javascript %}
+  import { Component } from '@theme/component';
+
+  class SoyCustomMeasurements extends Component {
+    connectedCallback() {
+      super.connectedCallback();
+      this.#listenForVariant();
+      this.#interceptAddToCart();
+    }
+
+    #listenForVariant() {
+      document.addEventListener('variant:selected', (e) => {
+        const variant = e.detail?.variant;
+        if (!variant) return;
+
+        const sizeOption = variant.title || '';
+        if (sizeOption && this.refs.wrap && this.refs.sizeLabel) {
+          this.refs.wrap.hidden = false;
+          this.refs.sizeLabel.textContent = sizeOption;
+        }
+      });
+    }
+
+    #interceptAddToCart() {
+      const section = this.closest('.product-information');
+      if (!section) return;
+
+      const observer = new MutationObserver(() => {
+        const form = section.querySelector('form[data-type="add-to-cart-form"]');
+        if (!form) return;
+        observer.disconnect();
+
+        form.addEventListener('formdata', (e) => {
+          const bust = this.refs.bust?.value?.trim();
+          const waist = this.refs.waist?.value?.trim();
+          const hip = this.refs.hip?.value?.trim();
+          const length = this.refs.length?.value?.trim();
+          const notes = this.refs.notes?.value?.trim();
+
+          if (bust) e.formData.set('properties[Bust]', bust + ' in');
+          if (waist) e.formData.set('properties[Waist]', waist + ' in');
+          if (hip) e.formData.set('properties[Hip]', hip + ' in');
+          if (length) e.formData.set('properties[Length]', length + ' in');
+          if (notes) e.formData.set('properties[Alteration Notes]', notes);
+        });
+      });
+
+      observer.observe(section, { childList: true, subtree: true });
+
+      // Also try immediately
+      const form = section.querySelector('form[data-type="add-to-cart-form"]');
+      if (form) {
+        observer.disconnect();
+        form.addEventListener('formdata', (e) => {
+          const bust = this.refs.bust?.value?.trim();
+          const waist = this.refs.waist?.value?.trim();
+          const hip = this.refs.hip?.value?.trim();
+          const length = this.refs.length?.value?.trim();
+          const notes = this.refs.notes?.value?.trim();
+
+          if (bust) e.formData.set('properties[Bust]', bust + ' in');
+          if (waist) e.formData.set('properties[Waist]', waist + ' in');
+          if (hip) e.formData.set('properties[Hip]', hip + ' in');
+          if (length) e.formData.set('properties[Length]', length + ' in');
+          if (notes) e.formData.set('properties[Alteration Notes]', notes);
+        });
+      }
+    }
+  }
+
+  customElements.define('soy-custom-measurements', SoyCustomMeasurements);
+{% endjavascript %}
+
+{% stylesheet %}
+  .soy-measurements__wrap {
+    margin-block-start: 0.25rem;
+    padding: 1rem 1.125rem;
+    background: #f7f3eb;
+    border-radius: 6px;
+  }
+
+  .soy-measurements__title {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-measurements__note {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    color: rgb(var(--color-foreground-rgb) / 0.65);
+    line-height: 1.4;
+  }
+
+  .soy-measurements__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
+    margin-block-start: 0.875rem;
+  }
+
+  .soy-measurements__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .soy-measurements__field--full {
+    margin-block-start: 0.625rem;
+  }
+
+  .soy-measurements__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+  }
+
+  .soy-measurements__input {
+    width: 100%;
+    padding: 0.5rem 0.625rem;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+    background: #fff;
+    border: 1px solid rgba(26, 26, 26, 0.15);
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .soy-measurements__input:focus {
+    border-color: var(--color-foreground-heading);
+  }
+
+  .soy-measurements__textarea {
+    resize: vertical;
+    min-height: 3rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Custom measurements",
+  "settings": []
+}
+{% endschema %}

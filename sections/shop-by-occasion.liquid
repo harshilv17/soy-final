@@ -1,0 +1,273 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="shop-by-occasion section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="shop-by-occasion__inner page-width">
+    <h2 class="shop-by-occasion__heading">
+      <span class="shop-by-occasion__heading-primary">{{ section.settings.title | escape }}</span>
+      {% if section.settings.subtitle != blank %}
+        <span class="shop-by-occasion__heading-script">{{ section.settings.subtitle | escape }}</span>
+      {% endif %}
+    </h2>
+
+    <div class="shop-by-occasion__grid" role="list">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'tile' %}
+            <div class="shop-by-occasion__tile" role="listitem" {{ block.shopify_attributes }}>
+              <a
+                class="shop-by-occasion__tile-link"
+                href="{{ block.settings.link | default: routes.collections_url }}"
+              >
+                <div class="shop-by-occasion__tile-media">
+                  {% if block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 900
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '200, 400, 600, 900',
+                        sizes: '(min-width: 990px) 22vw, 45vw',
+                        class: 'shop-by-occasion__image',
+                        alt: block.settings.image.alt | default: block.settings.label | escape
+                    }}
+                  {% else %}
+                    {{ 'collection-apparel-1' | placeholder_svg_tag: 'shop-by-occasion__placeholder' }}
+                  {% endif %}
+                  <div class="shop-by-occasion__tile-gradient" aria-hidden="true"></div>
+                </div>
+                <span class="shop-by-occasion__tile-label">{{ block.settings.label | escape }}</span>
+              </a>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .shop-by-occasion__heading {
+    margin: 0 0 var(--padding-xl);
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4em;
+    padding-inline: var(--padding-xs);
+    font: inherit;
+  }
+
+  .shop-by-occasion__heading-primary {
+    font-family: var(--font-body--family);
+    font-size: clamp(0.875rem, 2.2vw, 1.375rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    white-space: nowrap;
+    flex: 0 1 auto;
+    line-height: 1.2;
+  }
+
+  .shop-by-occasion__heading-script {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.375rem, 4.5vw, 2rem);
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--color-primary);
+    white-space: nowrap;
+    flex: 0 0 auto;
+    line-height: 1;
+  }
+
+  .shop-by-occasion__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--padding-sm);
+  }
+
+  @media screen and (min-width: 990px) {
+    .shop-by-occasion__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--padding-md);
+    }
+  }
+
+  .shop-by-occasion__tile-link {
+    position: relative;
+    display: block;
+    border-radius: var(--style-border-radius-cards, 12px);
+    overflow: hidden;
+    text-decoration: none;
+    color: #fdf9f1;
+    min-height: 200px;
+    isolation: isolate;
+  }
+
+  .shop-by-occasion__tile-link:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .shop-by-occasion__tile-media {
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--color-foreground-rgb) / 0.15);
+  }
+
+  .shop-by-occasion__image,
+  .shop-by-occasion__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .shop-by-occasion__placeholder {
+    opacity: 0.45;
+  }
+
+  .shop-by-occasion__tile-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.72) 0%, rgb(0 0 0 / 0.2) 55%, transparent 100%);
+  }
+
+  .shop-by-occasion__tile-label {
+    position: absolute;
+    z-index: 1;
+    left: var(--padding-md);
+    right: var(--padding-md);
+    bottom: var(--padding-md);
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--md);
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 35%);
+  }
+
+  .shop-by-occasion__tile-link {
+    aspect-ratio: 4 / 5;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.shop_by_occasion",
+  "tag": "section",
+  "class": "section-wrapper",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:settings.heading",
+      "default": "Handcrafted for Every"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:settings.subheading",
+      "default": "Occasion"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "t:names.image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:settings.image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:settings.text",
+          "default": "Occasion"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:settings.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.shop_by_occasion",
+      "blocks": {
+        "tile_work": {
+          "type": "tile",
+          "settings": {
+            "label": "Work day wear"
+          }
+        },
+        "tile_festive": {
+          "type": "tile",
+          "settings": {
+            "label": "Festive season"
+          }
+        },
+        "tile_weekend": {
+          "type": "tile",
+          "settings": {
+            "label": "Weekend easy"
+          }
+        },
+        "tile_gift": {
+          "type": "tile",
+          "settings": {
+            "label": "Gift with love"
+          }
+        }
+      },
+      "block_order": ["tile_work", "tile_festive", "tile_weekend", "tile_gift"]
+    }
+  ]
+}
+{% endschema %}

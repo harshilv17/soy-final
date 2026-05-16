@@ -1,0 +1,109 @@
+{%- liquid
+  assign s = block.settings
+  assign raw = s.highlights_text | default: ''
+  if s.use_metafields and closest.product.metafields.custom.pdp_highlights != blank
+    assign raw = closest.product.metafields.custom.pdp_highlights.value | default: closest.product.metafields.custom.pdp_highlights
+  endif
+-%}
+
+{% if raw != blank %}
+  {% capture newline %}
+{% endcapture %}
+  {% liquid
+    assign tokens = raw | replace: newline, ',' | split: ','
+  %}
+  <div class="soy-pdp-highlights" {{ block.shopify_attributes }}>
+    <ul class="soy-pdp-highlights__list" role="list">
+      {% for bit in tokens %}
+        {% assign label = bit | strip %}
+        {% if label != blank %}
+          <li class="soy-pdp-highlights__item">
+            <span class="soy-pdp-highlights__icon svg-wrapper" aria-hidden="true">
+              {{- 'icon-checkmark.svg' | inline_asset_content -}}
+            </span>
+            <span class="soy-pdp-highlights__label">{{ label | escape }}</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .soy-pdp-highlights__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0.375rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0;
+  }
+
+  .soy-pdp-highlights__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .soy-pdp-highlights__item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0;
+    background: #f7f3eb;
+    border: 0.5px solid rgba(26, 26, 26, 0.1);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: #1a1a1a;
+    white-space: nowrap;
+  }
+
+  .soy-pdp-highlights__icon {
+    display: inline-flex;
+    width: 0.6875rem;
+    height: 0.6875rem;
+    flex-shrink: 0;
+    color: #c28e6b;
+  }
+
+  .soy-pdp-highlights__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product highlights",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_metafields",
+      "label": "Use metafield when set",
+      "info": "custom.pdp_highlights (single line or comma-separated)",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "highlights_text",
+      "label": "Highlights",
+      "default": "Handcrafted, Natural dyes, Easy returns",
+      "info": "Comma or line separated (e.g. Handcrafted, Easy returns)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product highlights",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

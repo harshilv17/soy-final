@@ -1,0 +1,42 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "t:names.footer",
+  "sections": {
+    "soy_footer": {
+      "type": "soy-footer",
+      "settings": {
+        "help_heading": "",
+        "help_menu": "",
+        "categories_heading": "Categories",
+        "categories_menu": "main-menu",
+        "contact_heading": "Contact Us",
+        "email": "info@shadesofyou.co.in",
+        "phone": "+91 9354256072",
+        "address": "",
+        "store_location": "",
+        "about_heading": "More About Shade of You",
+        "about_menu": "",
+        "newsletter_heading": "Stay Updated",
+        "newsletter_text": "Become a part of our mailing list to get new discount offers & updates",
+        "newsletter_placeholder": "",
+        "instagram_url": "https://www.instagram.com/shadesofyouofficial",
+        "section_width": "page-width",
+        "color_scheme": "scheme-5",
+        "padding-block-start": 56,
+        "padding-block-end": 40
+      }
+    }
+  },
+  "order": [
+    "soy_footer"
+  ]
+}

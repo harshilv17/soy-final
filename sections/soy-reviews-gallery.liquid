@@ -1,0 +1,310 @@
+{% liquid
+  assign current_handle = product.handle | default: ''
+  assign has_matching_blocks = false
+  for block in section.blocks
+    if block.type == 'photo'
+      assign block_handle = block.settings.product_handle | strip
+      if block_handle == blank or block_handle == current_handle
+        assign has_matching_blocks = true
+        break
+      endif
+    endif
+  endfor
+%}
+
+{% if has_matching_blocks %}
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="soy-reviews section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="soy-reviews__inner page-width">
+    {% if section.settings.heading != blank %}
+      <h2 class="soy-reviews__heading">
+        <span class="soy-reviews__heading-primary">{{ section.settings.heading | escape }}</span>
+        {% if section.settings.heading_script != blank %}
+          <span class="soy-reviews__heading-script">{{ section.settings.heading_script | escape }}</span>
+        {% endif %}
+      </h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="soy-reviews__subheading">{{ section.settings.subheading | escape }}</p>
+    {% endif %}
+
+    <div class="soy-reviews__grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'photo' %}
+            {% liquid
+              assign block_handle = block.settings.product_handle | strip
+              assign show_block = false
+              if block_handle == blank or block_handle == current_handle
+                assign show_block = true
+              endif
+            %}
+            {% if show_block %}
+              <figure class="soy-reviews__item" {{ block.shopify_attributes }}>
+                <div class="soy-reviews__image-wrap">
+                  {% if block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 600
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '200, 400, 600',
+                        sizes: '(min-width: 990px) 20vw, (min-width: 750px) 30vw, 45vw',
+                        class: 'soy-reviews__image',
+                        alt: block.settings.name | default: 'Customer photo' | escape
+                    }}
+                  {% elsif block.settings.asset_filename != blank %}
+                    <img
+                      class="soy-reviews__image"
+                      src="{{ block.settings.asset_filename | asset_url }}"
+                      alt="{{ block.settings.name | default: 'Customer photo' | escape }}"
+                      loading="lazy"
+                      width="400"
+                      height="500"
+                    >
+                  {% else %}
+                    <div class="soy-reviews__placeholder">
+                      {{ 'product-apparel-1' | placeholder_svg_tag: 'soy-reviews__placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                </div>
+                {% if block.settings.name != blank %}
+                  <figcaption class="soy-reviews__name">{{ block.settings.name | escape }}</figcaption>
+                {% endif %}
+              </figure>
+            {% endif %}
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% stylesheet %}
+  .soy-reviews__inner {
+    max-width: var(--normal-page-width);
+    margin-inline: auto;
+  }
+
+  .soy-reviews__heading {
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4em;
+    font: inherit;
+  }
+
+  .soy-reviews__heading-primary {
+    font-family: var(--font-body--family);
+    font-size: clamp(0.875rem, 2.2vw, 1.375rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .soy-reviews__heading-script {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.375rem, 4.5vw, 2rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--color-primary);
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .soy-reviews__subheading {
+    margin: var(--padding-xs) auto 0;
+    text-align: center;
+    font-size: var(--font-size--sm);
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  /* Grid */
+  .soy-reviews__grid {
+    margin-block-start: var(--padding-xl);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--padding-md);
+  }
+
+  @media screen and (min-width: 750px) {
+    .soy-reviews__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .soy-reviews__grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--padding-md);
+    }
+  }
+
+  /* Item */
+  .soy-reviews__item {
+    margin: 0;
+  }
+
+  .soy-reviews__image-wrap {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--style-border-radius-cards, 10px);
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+  }
+
+  .soy-reviews__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .soy-reviews__item:hover .soy-reviews__image {
+    transform: scale(1.03);
+  }
+
+  .soy-reviews__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .soy-reviews__placeholder-svg {
+    width: 40%;
+    height: auto;
+    opacity: 0.15;
+  }
+
+  .soy-reviews__name {
+    margin-block-start: 0.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-align: center;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .soy-reviews__image {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reviews gallery",
+  "tag": "section",
+  "class": "section-wrapper",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Soy &"
+    },
+    {
+      "type": "text",
+      "id": "heading_script",
+      "label": "Script heading",
+      "default": "Me",
+      "info": "Displayed in cursive accent font"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real customers, real style"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Customer photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo",
+          "info": "Upload via image picker, or use asset filename below"
+        },
+        {
+          "type": "text",
+          "id": "asset_filename",
+          "label": "Asset filename",
+          "info": "e.g. soy-review-vidhisha.webp — used if no image is picked above"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name"
+        },
+        {
+          "type": "text",
+          "id": "product_handle",
+          "label": "Product handle",
+          "info": "Leave blank to show on all products. Enter a product handle (e.g. sheer-bliss-top) to show only on that product."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews gallery"
+    }
+  ]
+}
+{% endschema %}

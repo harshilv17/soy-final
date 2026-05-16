@@ -1,0 +1,144 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="footer-strip section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="footer-strip__inner page-width">
+    <blockquote class="footer-strip__quote">
+      <p>{{ section.settings.quote | escape }}</p>
+    </blockquote>
+    {% if section.settings.link_label != blank %}
+      <a class="footer-strip__link" href="{{ section.settings.link_url | default: routes.all_products_collection_url }}">
+        {{ section.settings.link_label | escape }}
+        <span class="footer-strip__arrow" aria-hidden="true">→</span>
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .footer-strip__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--padding-md);
+    border-block: 1px solid rgb(var(--color-border-rgb) / 0.6);
+    padding-block: var(--padding-lg);
+  }
+
+  @media screen and (min-width: 750px) {
+    .footer-strip__inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .footer-strip__quote {
+    margin: 0;
+    max-width: 42rem;
+  }
+
+  .footer-strip__quote p {
+    margin: 0;
+    font-size: var(--font-size--md);
+    font-style: italic;
+    color: var(--color-foreground);
+  }
+
+  .footer-strip__link {
+    font-size: var(--font-size--sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+
+  .footer-strip__link:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .footer-strip__link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .footer-strip__arrow {
+    margin-inline-start: 0.25em;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.footer_strip",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "t:settings.text",
+      "default": "Every piece is handcrafted in small batches—made to feel personal, lasting, and quietly luxurious."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "t:settings.label",
+      "default": "See all styles"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.footer_strip"
+    }
+  ]
+}
+{% endschema %}

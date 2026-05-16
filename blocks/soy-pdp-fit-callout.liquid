@@ -1,0 +1,61 @@
+{%- liquid
+  assign s = block.settings
+  assign product = closest.product
+  assign model_note = s.model_note
+  assign fit_tip = s.fit_tip
+  if s.use_metafields
+    if product.metafields.custom.model_details != blank
+      assign model_note = product.metafields.custom.model_details.value | default: product.metafields.custom.model_details
+    endif
+    if product.metafields.custom.fit_tip != blank
+      assign fit_tip = product.metafields.custom.fit_tip.value | default: product.metafields.custom.fit_tip
+    endif
+  endif
+-%}
+
+{% if model_note != blank or fit_tip != blank %}
+  <div class="soy-pdp-fit-callout" {{ block.shopify_attributes }}>
+    <div class="soy-product-info__callout">
+      {% if model_note != blank %}
+        <p>{{ model_note }}</p>
+      {% endif %}
+      {% if fit_tip != blank %}
+        <p class="soy-product-info__callout-accent">{{ fit_tip }}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Model & fit note",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_metafields",
+      "label": "Use product metafields when set",
+      "info": "custom.model_details, custom.fit_tip",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "model_note",
+      "label": "Model note",
+      "default": "Model is 5'4\" and is wearing size M"
+    },
+    {
+      "type": "text",
+      "id": "fit_tip",
+      "label": "Fit tip",
+      "default": "Runs true to size — size up for a relaxed fit"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Model & fit note",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

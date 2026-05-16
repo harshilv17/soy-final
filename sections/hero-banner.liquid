@@ -1,0 +1,302 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="hero-banner section section--full-width color-{{ section.settings.color_scheme }}"
+  style="--hero-banner-min-height: {{ section.settings.min_height }}px;"
+>
+  <div class="hero-banner__media">
+    {% liquid
+      assign mobile_image = section.settings.image
+      assign desktop_image = section.settings.desktop_image | default: mobile_image
+      assign has_image = false
+      if mobile_image != blank or desktop_image != blank
+        assign has_image = true
+      endif
+    %}
+    {% if has_image %}
+      <picture>
+        {% if desktop_image != blank %}
+          <source
+            media="(min-width: 750px)"
+            srcset="
+              {{ desktop_image | image_url: width: 750 }} 750w,
+              {{ desktop_image | image_url: width: 1100 }} 1100w,
+              {{ desktop_image | image_url: width: 1500 }} 1500w,
+              {{ desktop_image | image_url: width: 2200 }} 2200w,
+              {{ desktop_image | image_url: width: 3000 }} 3000w,
+              {{ desktop_image | image_url: width: 3840 }} 3840w
+            "
+            width="{{ desktop_image.width }}"
+            height="{{ desktop_image.height }}"
+          >
+        {% endif %}
+        {% if mobile_image != blank %}
+          {{
+            mobile_image
+            | image_url: width: 750
+            | image_tag:
+              widths: '375, 550, 750',
+              sizes: '100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              class: 'hero-banner__image',
+              alt: mobile_image.alt | default: section.settings.headline | escape
+          }}
+        {% elsif desktop_image != blank %}
+          {{
+            desktop_image
+            | image_url: width: 3840
+            | image_tag:
+              widths: '375, 550, 750, 1100, 1500, 2200, 3000, 3840',
+              sizes: '100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              class: 'hero-banner__image',
+              alt: desktop_image.alt | default: section.settings.headline | escape
+          }}
+        {% endif %}
+      </picture>
+    {% else %}
+      <div class="hero-banner__placeholder" role="img" aria-label="{{ section.settings.headline | escape }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero-banner__placeholder-svg' }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="hero-banner__overlay" style="--hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+
+  <div class="hero-banner__inner page-width">
+    <div class="hero-banner__card color-{{ section.settings.card_color_scheme }}">
+      {% if section.settings.eyebrow != blank %}
+        <p class="hero-banner__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {% endif %}
+      <h1 class="hero-banner__heading">{{ section.settings.headline | escape }}</h1>
+      {% if section.settings.body != blank %}
+        <div class="hero-banner__body rte">{{ section.settings.body }}</div>
+      {% endif %}
+      <div class="hero-banner__actions">
+        {% if section.settings.primary_label != blank %}
+          <a
+            class="button hero-banner__btn hero-banner__btn--primary"
+            href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}"
+          >
+            {{ section.settings.primary_label | escape }}
+          </a>
+        {% endif %}
+        {% if section.settings.secondary_label != blank %}
+          <a
+            class="button button-secondary hero-banner__btn hero-banner__btn--secondary"
+            href="{{ section.settings.secondary_link | default: routes.collections_url }}"
+          >
+            {{ section.settings.secondary_label | escape }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero-banner {
+    position: relative;
+    display: grid;
+    min-height: var(--hero-banner-min-height, 520px);
+    align-items: end;
+    padding-block-end: var(--padding-2xl);
+  }
+
+  .hero-banner__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-banner__image,
+  .hero-banner__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-banner__placeholder {
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+    display: grid;
+    place-items: center;
+  }
+
+  .hero-banner__placeholder-svg {
+    width: min(40%, 220px);
+    height: auto;
+    opacity: 0.35;
+  }
+
+  .hero-banner__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgb(0 0 0 / calc(0.35 + var(--hero-overlay-opacity, 0.25) * 0.5)),
+      rgb(0 0 0 / calc(var(--hero-overlay-opacity, 0.25) * 0.35)) 42%,
+      transparent 72%
+    );
+  }
+
+  .hero-banner__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .hero-banner__card {
+    max-width: 34rem;
+    padding: var(--padding-xl);
+    border-radius: var(--style-border-radius-cards, 12px);
+    box-shadow: var(--shadow-drawer, 0 12px 40px rgb(0 0 0 / 12%));
+  }
+
+  .hero-banner__eyebrow {
+    margin: 0 0 var(--padding-xs);
+    font-size: var(--font-size--xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .hero-banner__heading {
+    margin: 0 0 var(--padding-sm);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: 1.15;
+    color: var(--color-foreground-heading);
+  }
+
+  .hero-banner__body {
+    margin-block-end: var(--padding-lg);
+    color: var(--color-foreground);
+  }
+
+  .hero-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--padding-sm);
+  }
+
+  .hero-banner__btn {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--font-size--xs);
+  }
+
+  @media screen and (min-width: 990px) {
+    .hero-banner {
+      align-items: center;
+      padding-block: var(--padding-3xl);
+    }
+
+    .hero-banner__inner {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .hero-banner__card {
+      margin-inline-start: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.hero_banner",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "t:settings.height",
+      "min": 360,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:settings.overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 35
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:settings.subheading",
+      "default": "Handcrafted batik"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "t:settings.heading",
+      "default": "Crafted by hand. Made for you."
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "t:settings.text",
+      "default": "<p>Thoughtfully made batik wear for everyday moments and celebrations—soft fabrics, slow craft, pieces that feel like <em>you</em>.</p>"
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "t:names.primary_button",
+      "default": "Shop new"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "t:names.secondary_button",
+      "default": "Explore collections"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-6"
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_color_scheme",
+      "label": "t:names.card",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.hero_banner"
+    }
+  ]
+}
+{% endschema %}

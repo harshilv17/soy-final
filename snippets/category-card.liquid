@@ -1,0 +1,47 @@
+{%- doc -%}
+  Category Card
+
+  Renders a circular icon card with a label, used in "Shop by Category" grids.
+
+  @param {string} title - Label text displayed below the circle
+  @param {string} [icon] - SVG markup to render inside the circle
+  @param {string} [link] - URL the card links to
+  @param {string} [image] - Image object for the circle (used if no icon SVG provided)
+
+  @example
+  {% render 'category-card',
+    title: 'Kurtas',
+    icon: '<svg>...</svg>',
+    link: '/collections/kurtas'
+  %}
+{%- enddoc -%}
+
+{%- liquid
+  assign title = title | default: ''
+  assign link = link | default: routes.collections_url
+
+  unless title != blank
+    break
+  endunless
+-%}
+
+<a class="category-card" href="{{ link }}">
+  <div class="category-card__circle">
+    {%- if icon != blank -%}
+      {{ icon }}
+    {%- elsif image != blank -%}
+      {{
+        image
+        | image_url: width: 200
+        | image_tag:
+          loading: 'lazy',
+          widths: '100, 200',
+          class: 'category-card__image',
+          alt: title | escape
+      }}
+    {%- else -%}
+      {{ 'collection-apparel-1' | placeholder_svg_tag: 'category-card__placeholder' }}
+    {%- endif -%}
+  </div>
+  <span class="category-card__label">{{ title | escape }}</span>
+</a>

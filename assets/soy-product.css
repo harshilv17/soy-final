@@ -1,0 +1,600 @@
+/* Shades of You — product detail page (mobile-first)
+   Load via snippets/stylesheets.liquid on product template so rules apply in cascade. */
+.soy-product-pdp {
+  --soy-text: #3c2a21;
+  --soy-peach: #c48b6c;
+  --soy-peach-soft: rgba(196, 139, 108, 0.12);
+  --soy-peach-muted: rgba(196, 139, 108, 0.85);
+  --soy-cream: #faf7f2;
+  --soy-cream-muted: #f0ebe3;
+  --soy-line: rgba(60, 42, 33, 0.12);
+}
+
+.soy-product-pdp.color-scheme-1,
+.soy-product-pdp[class*='color-'] {
+  background: var(--soy-cream);
+}
+
+.soy-product-pdp .product-information__grid {
+  gap: 0;
+}
+
+/* Media narrower, details wider on desktop — override base theme (specificity 0,4,0) */
+@media screen and (min-width: 990px) {
+  .soy-product-pdp .product-information__grid.product-information--media-left:not(.product-information--media-none) {
+    grid-template-columns: 7fr 5fr;
+  }
+
+  /* Details: breathing room since the section is now full-width */
+  .soy-product-pdp .product-information__grid.product-information--media-left .product-details {
+    padding-inline-start: clamp(2rem, 4vw, 4rem);
+    padding-inline-end: clamp(2rem, 4vw, 4rem);
+  }
+}
+
+/* Gallery: rounded cards on desktop only */
+@media screen and (min-width: 750px) {
+  .soy-product-pdp .product-media-container {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+/* Sticky info (heart + price) — hidden by default; shown in mobile sticky bar below */
+.soy-sticky-info {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  /* Full-bleed image — span out of the page-margin columns */
+  .soy-product-pdp .product-information__media {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-inline-start: calc(50% - 50vw) !important;
+    margin-inline-end: calc(50% - 50vw) !important;
+    padding: 0 !important;
+  }
+
+  /* Force media gallery and any wrappers to fill the full-bleed container */
+  .soy-product-pdp .product-information__media > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-inline: 0 !important;
+    margin-inline: 0 !important;
+  }
+
+  .soy-product-pdp .product-information__media media-gallery {
+    padding-inline: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Cap image to 65 vh and fill edge-to-edge without side gaps */
+  .soy-product-pdp .product-information__media .product-media-container {
+    width: 100% !important;
+    height: 65vh;
+    max-height: none;
+    aspect-ratio: auto;
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .soy-product-pdp .product-information__media .product-media-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  /* Tighter padding so title starts near the edge */
+  .soy-product-pdp .product-details > .group-block {
+    padding-inline: 0.5rem;
+  }
+
+  /* Sticky buy bar — flex row: [heart+price] on left, [add to cart] on right */
+  .soy-product-pdp .buy-buttons-block {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--soy-cream, #faf7f2);
+    padding: 10px 16px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    box-shadow: 0 -2px 16px rgba(60, 42, 33, 0.12);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Show heart + price on the left */
+  .soy-product-pdp .buy-buttons-block .soy-sticky-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .soy-sticky-info__heart {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--soy-text, #3c2a21);
+    flex-shrink: 0;
+  }
+
+  .soy-sticky-info__prices {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .soy-sticky-info__price {
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--soy-text, #3c2a21);
+  }
+
+  .soy-sticky-info__compare {
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    color: #9a9998;
+    text-decoration: line-through;
+  }
+
+  /* Add-to-cart form fills the right side */
+  .soy-product-pdp .buy-buttons-block product-form-component {
+    flex: 0 0 55%;
+  }
+
+  /* Hide quantity, alteration field, volume pricing, and accelerated checkout in sticky bar */
+  .soy-product-pdp .buy-buttons-block .quantity-label,
+  .soy-product-pdp .buy-buttons-block .quantity-rules,
+  .soy-product-pdp .buy-buttons-block .product-form-qty-row,
+  .soy-product-pdp .buy-buttons-block .volume-pricing,
+  .soy-product-pdp .buy-buttons-block .custom-alteration-field,
+  .soy-product-pdp .buy-buttons-block .accelerated-checkout-block,
+  .soy-product-pdp .buy-buttons-block .product-form-text__error {
+    display: none;
+  }
+
+  /* Prevent page content from being hidden behind the fixed bar */
+  .soy-product-pdp .product-details {
+    padding-bottom: 80px;
+  }
+}
+
+/* ── Title: serif, editorial ── */
+.soy-product-pdp .product-details h1,
+.soy-product-pdp .product-details .custom-typography h1,
+.soy-product-pdp .product-details .h3.h3 h1 {
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  color: var(--soy-text);
+  margin: 0;
+}
+
+/* ── Long-form product description (RTE): sans, dark brown, airy — matches reference PDP ── */
+.soy-product-pdp .product-details .rte {
+  font-family: var(--font-body--family);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: var(--soy-text);
+}
+
+.soy-product-pdp .product-details .rte p {
+  margin: 0 0 1.15rem;
+}
+
+.soy-product-pdp .product-details .rte p:last-child {
+  margin-bottom: 0;
+}
+
+.soy-product-pdp .product-details .rte strong {
+  font-weight: 700;
+  color: var(--soy-text);
+}
+
+.soy-product-pdp .product-details .rte ul,
+.soy-product-pdp .product-details .rte ol {
+  margin: 0 0 1.15rem;
+  padding-left: 1.2rem;
+  color: var(--soy-text);
+}
+
+.soy-product-pdp .product-details .rte li {
+  margin-bottom: 0.35rem;
+}
+
+/* ── Rating row ── */
+.soy-product-pdp .rating-wrapper {
+  margin-top: 0.35rem;
+}
+
+.soy-product-pdp .rating-wrapper .rating-count,
+.soy-product-pdp .rating-wrapper p {
+  font-size: 0.8125rem;
+  color: var(--soy-peach-muted);
+}
+
+/* ── Price row ── */
+.soy-product-pdp product-price .price-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.soy-product-pdp product-price .price {
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.soy-product-pdp product-price .compare-at-price {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.soy-product-pdp .price-savings-badge {
+  font-family: var(--font-body--family);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.55rem;
+  border-radius: 4px;
+  background: var(--soy-peach-soft);
+  color: var(--color-foreground-heading);
+}
+
+/* ── Dividers ── */
+.soy-product-pdp .divider,
+.soy-product-pdp hr {
+  border-color: var(--soy-line);
+  opacity: 1;
+}
+
+/* ── Variant picker: circular size buttons ── */
+.soy-product-pdp .variant-picker .variant-option--buttons,
+.soy-product-pdp .variant-picker .variant-option--equal-width-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.soy-product-pdp .variant-picker .variant-option--equal-width-buttons .variant-option__button-label {
+  flex: 0 0 auto;
+}
+
+.soy-product-pdp .variant-picker .variant-option--buttons legend {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.65rem;
+  color: var(--color-foreground-heading);
+}
+
+.soy-product-pdp .variant-option--buttons .variant-option__button-label {
+  border-radius: 50%;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(26, 26, 26, 0.15);
+  background: transparent;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.soy-product-pdp .variant-option__button-label:has(input:checked) {
+  border-width: 3px;
+  border-color: var(--color-foreground-heading);
+  box-shadow: none;
+}
+
+.soy-product-pdp .variant-option__button-label__text {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.soy-product-pdp .variant-option__button-label:has(input:disabled),
+.soy-product-pdp .variant-option__button-label:has([aria-disabled='true']) {
+  opacity: 0.45;
+}
+
+.soy-product-pdp .variant-option__button-label:has(input:disabled) .variant-option__button-label__text,
+.soy-product-pdp .variant-option__button-label:has([aria-disabled='true']) .variant-option__button-label__text {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.soy-product-pdp .variant-option--equal-width-buttons .variant-option__button-label {
+  width: 2.75rem;
+  flex: 0 0 auto;
+}
+
+/* Size guide link (variant picker legend row) */
+.soy-product-pdp .variant-option__legend--with-size-guide {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin-bottom: 0.65rem;
+  float: none;
+}
+
+.soy-product-pdp .variant-option__legend-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.soy-product-pdp .variant-option__size-guide-link,
+.soy-product-pdp .soy-pdp-size-guide-link {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--soy-peach);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.soy-product-pdp .variant-option__size-guide-link:focus-visible {
+  outline: 2px solid var(--soy-peach);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Highlights strip under title block */
+.soy-product-pdp .soy-pdp-highlights {
+  margin-top: 1rem;
+}
+
+/* Low stock urgency dot */
+.soy-product-pdp product-inventory:has(.product-inventory__icon-low) .product-inventory__status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e0783e;
+  flex-shrink: 0;
+}
+
+
+/* ── Buy buttons ── */
+.soy-product-pdp .buy-buttons .button,
+.soy-product-pdp .buy-buttons .add-to-cart-button {
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+/* ── Product description RTE ── */
+.soy-product-pdp .product-details .rte {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgb(var(--color-foreground-rgb) / 0.85);
+}
+
+.soy-product-pdp .product-details .rte p {
+  margin: 0 0 0.5rem;
+}
+
+.soy-product-pdp .product-details .rte p:last-child {
+  margin-bottom: 0;
+}
+
+.soy-product-pdp .product-details .rte ul,
+.soy-product-pdp .product-details .rte ol {
+  margin: 0 0 0.5rem;
+}
+
+.soy-product-pdp .product-details .rte li {
+  margin-bottom: 0.2rem;
+}
+
+/* ── soy-product-info block ── */
+.soy-product-pdp .soy-product-info {
+  margin-top: 0.5rem;
+}
+
+.soy-product-pdp .soy-product-info__callout {
+  background: #f7f3eb;
+  border-radius: 0;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.soy-product-pdp .soy-product-info__callout p {
+  margin: 0;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: rgb(26 26 26 / 0.7);
+}
+
+.soy-product-pdp .soy-product-info__callout-accent {
+  font-size: 0.6875rem;
+  color: #c28e6b;
+  font-weight: 500;
+  margin: 0;
+}
+
+.soy-product-pdp .soy-product-info__section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--color-foreground-heading);
+}
+
+.soy-product-pdp .soy-product-info__detail {
+  margin-bottom: 1rem;
+}
+
+.soy-product-pdp .soy-product-info__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c28e6b;
+  margin: 0 0 0.35rem;
+}
+
+.soy-product-pdp .soy-product-info__body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--soy-text);
+  font-family: var(--font-body--family);
+}
+
+.soy-product-pdp .soy-product-info__included {
+  margin-top: 1.25rem;
+  padding: 0.75rem 0.875rem 0.875rem;
+  background: #f7f3eb;
+  border-radius: 0;
+  border: none;
+}
+
+.soy-product-pdp .soy-product-info__included-heading {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-foreground-rgb) / 0.45);
+  margin: 0 0 0.65rem;
+}
+
+.soy-product-pdp .soy-product-info__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.soy-product-pdp .soy-product-info__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #fff;
+  border: 1px solid rgba(26, 26, 26, 0.12);
+  border-radius: 4px;
+  color: var(--color-foreground-heading);
+}
+
+/* ── Inventory (low stock) ── */
+.soy-product-pdp .product-inventory__text {
+  font-size: 0.8125rem;
+}
+
+.soy-product-pdp .product-inventory--low .product-inventory__text {
+  color: var(--color-foreground-heading);
+}
+
+.soy-product-pdp .product-inventory__icon-low {
+  color: var(--soy-peach);
+}
+
+/* ── Complementary row ── */
+.soy-product-pdp .soy-complementary {
+  margin-top: 0.25rem;
+}
+
+.soy-product-pdp .soy-complementary__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.soy-product-pdp .soy-complementary__title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.soy-product-pdp .soy-complementary__link {
+  font-size: 0.8125rem;
+  color: var(--soy-peach);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.soy-product-pdp .soy-complementary__track {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.soy-product-pdp .soy-complementary__card {
+  flex: 0 0 38vw;
+  max-width: 140px;
+  scroll-snap-align: start;
+  text-decoration: none;
+  color: inherit;
+}
+
+.soy-product-pdp .soy-complementary__media {
+  aspect-ratio: 3 / 4;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--soy-cream-muted);
+}
+
+.soy-product-pdp .soy-complementary__media img,
+.soy-product-pdp .soy-complementary__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.soy-product-pdp .soy-complementary__card-title {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.soy-product-pdp .soy-complementary__card-price {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgb(var(--color-foreground-rgb) / 0.55);
+}
+
+/* Judge.me / app blocks: soften full-width band */
+.soy-product-pdp .shopify-app-block {
+  margin-top: 1rem;
+}

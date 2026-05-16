@@ -1,0 +1,448 @@
+{% doc %}
+  @prompt
+    Create a full-width hero section block for an ethnic fashion brand.
+    
+    **Layout:**
+    - The hero MUST be full-width: all containers use `width: 100%; max-width: 100%; box-sizing: border-box;` — no fixed widths, no column layouts, no grid that splits the screen
+    - Full-viewport-width background image using `background-size: cover; background-position: center; width: 100%;`
+    - Minimum height of 85vh
+    - NO blank space on the right side — the image must fill the entire width
+    
+    **Text overlay:**
+    - Text positioned in the LOWER-LEFT of the hero (bottom 35% of the image)
+    - Zero background overlay on the image — text floats directly over it with no color wash
+    - Headline: "Timeless Elegance" in Noto Serif font-weight 300, large (~56px), color #1a1a1a
+    - Subtext: "Discover our curated collection of ethnic fashion" in Manrope sans-serif, color #1a1a1a
+    - Two buttons side by side:
+      - Filled dark button: "SHOP NEW →" background #1a1a1a, text white, Manrope uppercase
+      - Outlined ghost button: "EXPLORE COLLECTIONS" border #1a1a1a, transparent background, Manrope uppercase
+    
+    **Design system:**
+    - Import Noto Serif (weight 300) and Manrope from Google Fonts
+    - Primary text: #1a1a1a
+    - Background canvas: #f7f3eb
+    - Accent: #c28e6b
+    
+    **Image:** Make the background image configurable via a Shopify image_picker setting called `hero_image`., now the image or the hero section size has to be of full width
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@300&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+{% style %}
+  .ai-ethnic-hero-{{ ai_gen_id }} {
+    display: block;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    box-sizing: border-box;
+    position: relative;
+    min-height: {{ block.settings.min_height }}vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    {% if block.settings.hero_image %}
+      background-image: url('{{ block.settings.hero_image | image_url: width: 2400 }}');
+    {% else %}
+      background-color: #f7f3eb;
+    {% endif %}
+  }
+
+  .ai-ethnic-hero-container-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: {{ block.settings.min_height }}vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 40px;
+    box-sizing: border-box;
+  }
+
+  .ai-ethnic-hero-content-{{ ai_gen_id }} {
+    max-width: 600px;
+    padding-bottom: 40px;
+  }
+
+  .ai-ethnic-hero-headline-{{ ai_gen_id }} {
+    font-family: 'Noto Serif', serif;
+    font-weight: 300;
+    font-size: {{ block.settings.headline_size }}px;
+    line-height: 1.2;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 16px 0;
+  }
+
+  .ai-ethnic-hero-subtext-{{ ai_gen_id }} {
+    font-family: var(--font-body--family);
+    font-size: {{ block.settings.subtext_size }}px;
+    line-height: 1.5;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 32px 0;
+  }
+
+  .ai-ethnic-hero-buttons-{{ ai_gen_id }} {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .ai-ethnic-hero-button-{{ ai_gen_id }} {
+    font-family: var(--font-body--family);
+    font-size: {{ block.settings.button_text_size }}px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 32px;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .ai-ethnic-hero-button-filled-{{ ai_gen_id }} {
+    background-color: {{ block.settings.filled_button_bg }};
+    color: {{ block.settings.filled_button_color }};
+    border: none;
+  }
+
+  .ai-ethnic-hero-button-filled-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.filled_button_hover_bg }};
+    color: {{ block.settings.filled_button_hover_color }};
+  }
+
+  .ai-ethnic-hero-button-ghost-{{ ai_gen_id }} {
+    background-color: transparent;
+    color: {{ block.settings.ghost_button_color }};
+    border: {{ block.settings.ghost_button_border_width }}px solid {{ block.settings.ghost_button_border }};
+  }
+
+  .ai-ethnic-hero-button-ghost-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.ghost_button_hover_bg }};
+    color: {{ block.settings.ghost_button_hover_color }};
+    border-color: {{ block.settings.ghost_button_hover_border }};
+  }
+
+  .ai-ethnic-hero-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f7f3eb;
+  }
+
+  .ai-ethnic-hero-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 400px;
+    opacity: 0.3;
+  }
+
+  .ai-ethnic-hero-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-ethnic-hero-container-{{ ai_gen_id }} {
+      padding: 24px;
+    }
+
+    .ai-ethnic-hero-content-{{ ai_gen_id }} {
+      padding-bottom: 24px;
+    }
+
+    .ai-ethnic-hero-headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.headline_size | times: 0.6 }}px;
+    }
+
+    .ai-ethnic-hero-subtext-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subtext_size | times: 0.9 }}px;
+      margin-bottom: 24px;
+    }
+
+    .ai-ethnic-hero-button-{{ ai_gen_id }} {
+      font-size: {{ block.settings.button_text_size | times: 0.9 }}px;
+      padding: 12px 24px;
+    }
+
+    .ai-ethnic-hero-buttons-{{ ai_gen_id }} {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .ai-ethnic-hero-button-{{ ai_gen_id }} {
+      width: 100%;
+      text-align: center;
+    }
+  }
+{% endstyle %}
+
+<ethnic-hero-{{ ai_gen_id }} class="ai-ethnic-hero-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% unless block.settings.hero_image %}
+    <div class="ai-ethnic-hero-placeholder-{{ ai_gen_id }}">
+      {{ 'hero-apparel-1' | placeholder_svg_tag }}
+      <div class="ai-ethnic-hero-empty-state-{{ ai_gen_id }}">
+        Add a hero image to get started
+      </div>
+    </div>
+  {% endunless %}
+
+  <div class="ai-ethnic-hero-container-{{ ai_gen_id }}">
+    <div class="ai-ethnic-hero-content-{{ ai_gen_id }}">
+      {% if block.settings.headline != blank %}
+        <h1 class="ai-ethnic-hero-headline-{{ ai_gen_id }}">{{ block.settings.headline }}</h1>
+      {% endif %}
+
+      {% if block.settings.subtext != blank %}
+        <p class="ai-ethnic-hero-subtext-{{ ai_gen_id }}">{{ block.settings.subtext }}</p>
+      {% endif %}
+
+      <div class="ai-ethnic-hero-buttons-{{ ai_gen_id }}">
+        {% if block.settings.filled_button_label != blank %}
+          <a
+            href="{{ block.settings.filled_button_link }}"
+            class="ai-ethnic-hero-button-{{ ai_gen_id }} ai-ethnic-hero-button-filled-{{ ai_gen_id }}"
+          >
+            {{ block.settings.filled_button_label }}
+          </a>
+        {% endif %}
+
+        {% if block.settings.ghost_button_label != blank %}
+          <a
+            href="{{ block.settings.ghost_button_link }}"
+            class="ai-ethnic-hero-button-{{ ai_gen_id }} ai-ethnic-hero-button-ghost-{{ ai_gen_id }}"
+          >
+            {{ block.settings.ghost_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</ethnic-hero-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class EthnicHero{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.style.display = 'block';
+      }
+    }
+
+    customElements.define('ethnic-hero-{{ ai_gen_id }}', EthnicHero{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Ethnic fashion hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Minimum height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 85
+    },
+    {
+      "type": "header",
+      "content": "Text content"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Timeless Elegance"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "label": "Headline size",
+      "min": 24,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Discover our curated collection of ethnic fashion"
+    },
+    {
+      "type": "range",
+      "id": "subtext_size",
+      "label": "Subtext size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Filled button"
+    },
+    {
+      "type": "text",
+      "id": "filled_button_label",
+      "label": "Button text",
+      "default": "SHOP NEW →"
+    },
+    {
+      "type": "url",
+      "id": "filled_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "filled_button_bg",
+      "label": "Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "filled_button_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "filled_button_hover_bg",
+      "label": "Hover background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "filled_button_hover_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Ghost button"
+    },
+    {
+      "type": "text",
+      "id": "ghost_button_label",
+      "label": "Button text",
+      "default": "EXPLORE COLLECTIONS"
+    },
+    {
+      "type": "url",
+      "id": "ghost_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "ghost_button_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "ghost_button_border",
+      "label": "Border",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "ghost_button_border_width",
+      "label": "Border width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "ghost_button_hover_bg",
+      "label": "Hover background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "ghost_button_hover_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "ghost_button_hover_border",
+      "label": "Hover border",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "range",
+      "id": "button_text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ethnic fashion hero"
+    }
+  ]
+}
+{% endschema %}

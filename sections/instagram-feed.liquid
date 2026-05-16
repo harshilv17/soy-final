@@ -1,0 +1,524 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="instagram-feed section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="instagram-feed__inner page-width">
+    <div class="instagram-feed__header">
+      {% if section.settings.heading != blank %}
+        <h2 class="instagram-feed__heading">
+          <span class="instagram-feed__heading-primary">{{ section.settings.heading | escape }}</span>
+          {% if section.settings.heading_script != blank %}
+            <span class="instagram-feed__heading-script">{{ section.settings.heading_script | escape }}</span>
+          {% endif %}
+        </h2>
+      {% endif %}
+      {% if section.settings.handle != blank %}
+        <a
+          class="instagram-feed__handle"
+          href="https://instagram.com/{{ section.settings.handle | handleize }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Follow @{{ section.settings.handle | escape }} on Instagram"
+        >
+          <svg class="instagram-feed__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="5"/>
+            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>@{{ section.settings.handle | escape }}</span>
+        </a>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <p class="instagram-feed__subheading">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class="instagram-feed__grid" role="list">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'reel' %}
+              <a
+                class="instagram-feed__reel"
+                href="{{ block.settings.link | default: '#' }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                role="listitem"
+                aria-label="{{ block.settings.caption | default: 'Instagram reel' | escape }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="instagram-feed__reel-media">
+                  {% if block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 800
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '300, 500, 800',
+                        sizes: '(min-width: 990px) 30vw, 42vw',
+                        class: 'instagram-feed__reel-image',
+                        alt: block.settings.caption | default: 'Instagram reel' | escape
+                    }}
+                  {% elsif block.settings.asset_filename != blank %}
+                    <img
+                      class="instagram-feed__reel-image"
+                      src="{{ block.settings.asset_filename | asset_url }}"
+                      alt="{{ block.settings.caption | default: 'Instagram reel' | escape }}"
+                      loading="lazy"
+                      width="800"
+                      height="1422"
+                    >
+                  {% else %}
+                    <div class="instagram-feed__reel-placeholder">
+                      {{ 'lifestyle-1' | placeholder_svg_tag: 'instagram-feed__placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                  <div class="instagram-feed__play-badge" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+                {% if block.settings.caption != blank %}
+                  <p class="instagram-feed__caption">{{ block.settings.caption | truncate: 60 | escape }}</p>
+                {% endif %}
+              </a>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if section.settings.button_label != blank %}
+      <div class="instagram-feed__cta">
+        <a
+          class="instagram-feed__button"
+          href="https://instagram.com/{{ section.settings.handle | handleize }}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ section.settings.button_label | escape }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var mq = window.matchMedia('(max-width: 749px)');
+    var rm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!mq.matches || rm.matches) return;
+
+    var section = document.currentScript.closest('.instagram-feed');
+    if (!section) return;
+    var grid = section.querySelector('.instagram-feed__grid');
+    if (!grid) return;
+
+    var items = Array.from(grid.querySelectorAll('.instagram-feed__reel'));
+    if (items.length < 2) return;
+
+    var paused = false;
+
+    function currentIndex() {
+      var min = Infinity, idx = 0;
+      items.forEach(function (el, i) {
+        var d = Math.abs(el.offsetLeft - grid.scrollLeft);
+        if (d < min) { min = d; idx = i; }
+      });
+      return idx;
+    }
+
+    function advance() {
+      if (paused) return;
+      var next = (currentIndex() + 1) % items.length;
+      grid.scrollTo({ left: items[next].offsetLeft, behavior: 'smooth' });
+    }
+
+    setInterval(advance, 2800);
+
+    grid.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    grid.addEventListener('touchend', function () { setTimeout(function () { paused = false; }, 1200); }, { passive: true });
+  })();
+</script>
+
+{% stylesheet %}
+  .instagram-feed__inner {
+    max-width: var(--normal-page-width);
+    margin-inline: auto;
+    overflow: hidden;
+  }
+
+  /* Header */
+
+  .instagram-feed__header {
+    text-align: center;
+    margin-block-end: var(--padding-lg);
+  }
+
+  .instagram-feed__heading {
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4em;
+    padding-inline: var(--padding-xs);
+    font: inherit;
+  }
+
+  .instagram-feed__heading-primary {
+    font-family: var(--font-body--family);
+    font-size: clamp(0.875rem, 2.2vw, 1.375rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    white-space: nowrap;
+    flex: 0 1 auto;
+    line-height: 1.2;
+  }
+
+  .instagram-feed__heading-script {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.375rem, 4.5vw, 2rem);
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--color-primary);
+    white-space: nowrap;
+    flex: 0 0 auto;
+    line-height: 1;
+  }
+
+  .instagram-feed a {
+    color: inherit;
+  }
+
+  .instagram-feed__handle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-block-start: var(--padding-sm);
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--md);
+    font-weight: 500;
+    color: rgb(var(--color-foreground-rgb));
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .instagram-feed__handle:hover {
+    opacity: 0.7;
+  }
+
+  .instagram-feed__handle:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .instagram-feed__icon {
+    flex-shrink: 0;
+  }
+
+  .instagram-feed__subheading {
+    margin: var(--padding-xs) auto 0;
+    max-width: 30rem;
+    font-size: var(--font-size--sm);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+    line-height: var(--line-height--body-normal);
+  }
+
+  /* Grid — 3 reels side by side on desktop */
+
+  .instagram-feed__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--padding-md);
+  }
+
+  /* Mobile — horizontal scroll */
+
+  @media screen and (max-width: 749px) {
+    .instagram-feed__inner {
+      overflow: visible;
+    }
+
+    .instagram-feed__grid {
+      display: flex;
+      gap: var(--padding-sm);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-block-end: var(--padding-xs);
+    }
+
+    .instagram-feed__grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .instagram-feed__reel {
+      flex: 0 0 38%;
+      min-width: 0;
+      scroll-snap-align: start;
+    }
+  }
+
+  /* Reel card */
+
+  .instagram-feed__reel {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--style-border-radius-cards, 12px);
+    overflow: hidden;
+    transition: transform 0.25s ease;
+  }
+
+  .instagram-feed__reel:hover {
+    transform: translateY(-4px);
+  }
+
+  .instagram-feed__reel:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-feed__reel,
+    .instagram-feed__handle {
+      transition: none;
+    }
+  }
+
+  /* Reel media — 9:16 portrait */
+
+  .instagram-feed__reel-media {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border-radius: var(--style-border-radius-cards, 12px);
+    background: rgb(var(--color-foreground-rgb) / 0.05);
+  }
+
+  .instagram-feed__reel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .instagram-feed__reel-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .instagram-feed__placeholder-svg {
+    width: 40%;
+    height: 40%;
+    opacity: 0.25;
+  }
+
+  /* Play badge */
+
+  .instagram-feed__play-badge {
+    position: absolute;
+    inset-block-end: var(--padding-sm);
+    inset-inline-end: var(--padding-sm);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(0 0 0 / 0.5);
+    color: #fff;
+    border-radius: 50%;
+    backdrop-filter: blur(4px);
+  }
+
+  .instagram-feed__caption {
+    margin: var(--padding-xs) 0 0;
+    padding-inline: 0.125rem;
+    font-size: var(--font-size--xs);
+    line-height: 1.4;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+  }
+
+  /* CTA */
+
+  .instagram-feed__cta {
+    text-align: center;
+    margin-block-start: var(--padding-lg);
+  }
+
+  .instagram-feed__button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--sm);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: rgb(var(--color-foreground-rgb));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
+    border-radius: var(--style-border-radius-cards, 8px);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .instagram-feed__button:hover {
+    background: rgb(var(--color-foreground-rgb));
+    color: rgb(var(--color-background-rgb, 255 255 255));
+  }
+
+  .instagram-feed__button:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-feed__button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Instagram feed",
+  "tag": "section",
+  "class": "section-wrapper",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Follow Us On"
+    },
+    {
+      "type": "text",
+      "id": "heading_script",
+      "label": "Script heading",
+      "default": "Instagram",
+      "info": "Displayed in cursive accent font"
+    },
+    {
+      "type": "text",
+      "id": "handle",
+      "label": "Instagram handle",
+      "default": "shadesofyou",
+      "info": "Without the @ symbol"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:settings.subheading",
+      "default": "See how our community styles their pieces"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Follow us"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "reel",
+      "name": "Reel",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Cover image",
+          "info": "Upload a thumbnail or screenshot from the reel"
+        },
+        {
+          "type": "text",
+          "id": "asset_filename",
+          "label": "Asset filename",
+          "info": "e.g. ig-cover-1.png — used if no image picked above"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Reel link",
+          "info": "Link to the Instagram reel"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram feed",
+      "blocks": {
+        "r1": {
+          "type": "reel",
+          "settings": {}
+        },
+        "r2": {
+          "type": "reel",
+          "settings": {}
+        },
+        "r3": {
+          "type": "reel",
+          "settings": {}
+        }
+      },
+      "block_order": ["r1", "r2", "r3"]
+    }
+  ]
+}
+{% endschema %}

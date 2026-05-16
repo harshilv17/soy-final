@@ -1,0 +1,39 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "cart-section": {
+      "type": "main-cart",
+      "settings": {
+        "eyebrow": "Cart",
+        "title": "Your bag",
+        "unit_singular": "piece",
+        "unit_plural": "pieces",
+        "empty_text": "Your bag is empty",
+        "free_shipping_threshold": 2499,
+        "shipping_away_text": "away from free shipping",
+        "shipping_unlocked_text": "You've unlocked free shipping",
+        "promo_placeholder": "Promo code (BATIK10 for first order)",
+        "pair_heading": "Pair with",
+        "pair_collection": "all",
+        "shipping_label": "Shipping",
+        "shipping_value": "Calculated at checkout",
+        "checkout_label": "Checkout securely",
+        "payment_note": "UPI · CARDS · COD · EMI",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 12,
+        "padding-block-end": 40
+      }
+    }
+  },
+  "order": [
+    "cart-section"
+  ]
+}

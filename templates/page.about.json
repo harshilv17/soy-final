@@ -1,0 +1,57 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "soy-about",
+      "blocks": {
+        "b1": {
+          "type": "text_block",
+          "settings": {
+            "title": "Our Journey",
+            "text": "<p>What began as a small dream to revive traditional batik artistry has grown into a movement — one that values slow craft, organic materials, and timeless design. Every Shades of You piece is handcrafted in small batches, made to feel personal, lasting, and quietly luxurious.</p>"
+          }
+        },
+        "b2": {
+          "type": "image_pair",
+          "settings": {}
+        },
+        "b3": {
+          "type": "text_block",
+          "settings": {
+            "title": "What We Believe",
+            "text": "<p>We work directly with artisan communities in India, ensuring fair wages and preserving centuries-old batik techniques. Our fabrics are 100% organic cotton and natural fibres — gentle on your skin, kinder to the planet.</p><p>From workday wear to festive season ensembles, every piece is designed to move with you through life's moments — made slowly and meant to last beyond a single season.</p>"
+          }
+        },
+        "b4": {
+          "type": "founders",
+          "settings": {
+            "heading": "Meet the Founders",
+            "founder_1_name": "Aarushi",
+            "founder_1_role": "Co-founder, design & production",
+            "founder_2_name": "Shanaya",
+            "founder_2_role": "Co-founder, brand & marketing"
+          }
+        }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"],
+      "settings": {
+        "heading": "Our",
+        "heading_script": "Story",
+        "intro": "Born from a love of handcrafted textiles and slow fashion, Shades of You brings you batik pieces made with intention.",
+        "section_width": "page-width",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 48,
+        "padding-block-end": 64
+      }
+    }
+  },
+  "order": ["main"]
+}

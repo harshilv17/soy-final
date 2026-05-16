@@ -1,0 +1,19 @@
+/* Shades of You — global heading overrides
+   Standardises all headings to match the "Customer favourites" style:
+   Manrope · uppercase · 0.12em tracking · weight 500 */
+
+:root {
+  --font-h1--letter-spacing: 0.12em;
+  --font-h2--letter-spacing: 0.12em;
+  --font-h3--letter-spacing: 0.12em;
+  --font-h4--letter-spacing: 0.12em;
+  --font-h5--letter-spacing: 0.12em;
+  --font-h6--letter-spacing: 0.12em;
+}
+
+h1, .h1.h1,
+h2, .h2.h2,
+h3, .h3, .h3.h3,
+h4, .h4.h4 {
+  font-weight: 500;
+}

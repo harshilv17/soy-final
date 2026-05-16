@@ -1,0 +1,178 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="soy-policy section section--page-width color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="soy-policy__inner page-width">
+    <header class="soy-policy__header">
+      <h1 class="soy-policy__title">{{ page.title | escape }}</h1>
+    </header>
+    <div class="soy-policy__body rte">
+      {{ page.content }}
+    </div>
+    {% if section.settings.contact_email != blank %}
+      <div class="soy-policy__contact">
+        <p>For any concerns, contact us at: <a href="mailto:{{ section.settings.contact_email | escape }}">{{ section.settings.contact_email | escape }}</a></p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .soy-policy__inner {
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+
+  .soy-policy__header {
+    text-align: center;
+    margin-block-end: 2.5rem;
+    padding-block-end: 1.5rem;
+    border-block-end: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+  }
+
+  .soy-policy__title {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+  }
+
+  /* Body content */
+  .soy-policy__body {
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: rgb(var(--color-foreground-rgb) / 0.85);
+  }
+
+  .soy-policy__body h2,
+  .soy-policy__body h3,
+  .soy-policy__body h4 {
+    font-family: var(--font-body--family);
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-policy__body h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    margin: 2rem 0 0.75rem;
+  }
+
+  .soy-policy__body h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .soy-policy__body p {
+    margin: 0 0 1rem;
+  }
+
+  .soy-policy__body strong {
+    font-weight: 600;
+    color: var(--color-foreground-heading);
+  }
+
+  .soy-policy__body ul,
+  .soy-policy__body ol {
+    margin: 0.5rem 0 1rem;
+    padding-inline-start: 1.25rem;
+  }
+
+  .soy-policy__body li {
+    margin-block-end: 0.35rem;
+  }
+
+  .soy-policy__body hr {
+    border: none;
+    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    margin: 2rem 0;
+  }
+
+  .soy-policy__body a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s ease;
+  }
+
+  .soy-policy__body a:hover {
+    opacity: 0.7;
+  }
+
+  /* Contact footer */
+  .soy-policy__contact {
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+  }
+
+  .soy-policy__contact p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  .soy-policy__contact a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .soy-policy__body a {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Policy page",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "Contact email",
+      "default": "info@shadesofyou.co.in"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 64
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,566 @@
+{% doc %}
+  @prompt
+    Create a "Shop by Category" section that displays product categories as circular icon cards in a horizontal row. Each category should have a circular background (beige/cream colored), a line-art style icon inside the circle, and a category label below it. The section should have a bold centered heading "SHOP BY CATEGORY" above the icons. Style should match an ethnic fashion brand — minimal, warm tones (beige/cream background, dark brown text and icons). The categories to include are: Kurtas, Sets, Dupattas, and Bottoms. Each category circle should be clickable and link to its respective collection. Responsive sizing: on desktop, use larger circles (around 140px diameter) with larger icons and font; on mobile, use smaller circles (around 80px diameter) with smaller icons and font. Add smooth hover effects on desktop (slight scale up). Layout should be a clean centered horizontal row on both desktop and mobile., in the desktop view it has to be in center
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign logo_img_class = 'ai-shop-category-logo-' | append: ai_gen_id %}
+
+{% style %}
+  .ai-shop-category-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding_top }}px 20px {{ block.settings.section_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-shop-category-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-shop-category-heading-{{ ai_gen_id }} {
+    text-align: center;
+    margin: 0 0 {{ block.settings.heading_spacing }}px;
+    font-size: {{ block.settings.heading_size_mobile }}px;
+    font-weight: 700;
+    color: {{ block.settings.heading_color }};
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .ai-shop-category-grid-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: {{ block.settings.gap_mobile }}px;
+    flex-wrap: wrap;
+  }
+
+  .ai-shop-category-item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-shop-category-circle-{{ ai_gen_id }} {
+    width: {{ block.settings.circle_size_mobile }}px;
+    height: {{ block.settings.circle_size_mobile }}px;
+    border-radius: 50%;
+    background-color: {{ block.settings.circle_background }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: {{ block.settings.label_spacing }}px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ai-shop-category-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size_mobile }}px;
+    height: {{ block.settings.icon_size_mobile }}px;
+  }
+
+  .ai-shop-category-icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    stroke: {{ block.settings.icon_color }};
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Uploaded icons (PNG/SVG): show full artwork inside circle, keep cream fill behind transparent SVGs */
+  .ai-shop-category-circle--image-{{ ai_gen_id }} {
+    padding: 14%;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: {{ block.settings.circle_background }};
+  }
+
+  .ai-shop-category-logo-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .ai-shop-category-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.label_size_mobile }}px;
+    color: {{ block.settings.label_color }};
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-shop-category-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size }}px;
+    }
+
+    .ai-shop-category-grid-{{ ai_gen_id }} {
+      gap: {{ block.settings.gap_desktop }}px;
+    }
+
+    .ai-shop-category-circle-{{ ai_gen_id }} {
+      width: {{ block.settings.circle_size_desktop }}px;
+      height: {{ block.settings.circle_size_desktop }}px;
+    }
+
+    .ai-shop-category-icon-{{ ai_gen_id }} {
+      width: {{ block.settings.icon_size_desktop }}px;
+      height: {{ block.settings.icon_size_desktop }}px;
+    }
+
+    .ai-shop-category-label-{{ ai_gen_id }} {
+      font-size: {{ block.settings.label_size_desktop }}px;
+    }
+
+    .ai-shop-category-item-{{ ai_gen_id }}:hover {
+      transform: translateY(-5px);
+    }
+
+    .ai-shop-category-item-{{ ai_gen_id }}:hover .ai-shop-category-circle-{{ ai_gen_id }} {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(59, 35, 20, 0.15);
+    }
+  }
+{% endstyle %}
+
+<shop-by-category-{{ ai_gen_id }} class="ai-shop-category-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-shop-category-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-shop-category-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="ai-shop-category-grid-{{ ai_gen_id }}">
+      {% if block.settings.category_1_collection != blank %}
+        <a href="{{ block.settings.category_1_collection.url }}" class="ai-shop-category-item-{{ ai_gen_id }}">
+          <div class="ai-shop-category-circle-{{ ai_gen_id }}{% if block.settings.category_1_image != blank %} ai-shop-category-circle--image-{{ ai_gen_id }}{% endif %}">
+            {% if block.settings.category_1_image != blank %}
+              {{
+                block.settings.category_1_image
+                | image_url: width: 640
+                | image_tag:
+                  class: logo_img_class,
+                  loading: 'lazy',
+                  alt: '',
+                  widths: '120, 180, 240, 360, 480, 640',
+                  sizes: '(min-width: 750px) ' | append: block.settings.circle_size_desktop | append: 'px, ' | append: block.settings.circle_size_mobile | append: 'px'
+              }}
+            {% else %}
+              <div class="ai-shop-category-icon-{{ ai_gen_id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/>
+                  <path d="M12 12v10"/>
+                  <path d="M4 7l8 5 8-5"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+          <span class="ai-shop-category-label-{{ ai_gen_id }}">{{ block.settings.category_1_label }}</span>
+        </a>
+      {% endif %}
+
+      {% if block.settings.category_2_collection != blank %}
+        <a href="{{ block.settings.category_2_collection.url }}" class="ai-shop-category-item-{{ ai_gen_id }}">
+          <div class="ai-shop-category-circle-{{ ai_gen_id }}{% if block.settings.category_2_image != blank %} ai-shop-category-circle--image-{{ ai_gen_id }}{% endif %}">
+            {% if block.settings.category_2_image != blank %}
+              {{
+                block.settings.category_2_image
+                | image_url: width: 640
+                | image_tag:
+                  class: logo_img_class,
+                  loading: 'lazy',
+                  alt: '',
+                  widths: '120, 180, 240, 360, 480, 640',
+                  sizes: '(min-width: 750px) ' | append: block.settings.circle_size_desktop | append: 'px, ' | append: block.settings.circle_size_mobile | append: 'px'
+              }}
+            {% else %}
+              <div class="ai-shop-category-icon-{{ ai_gen_id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M3 9h18"/>
+                  <path d="M9 3v18"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+          <span class="ai-shop-category-label-{{ ai_gen_id }}">{{ block.settings.category_2_label }}</span>
+        </a>
+      {% endif %}
+
+      {% if block.settings.category_3_collection != blank %}
+        <a href="{{ block.settings.category_3_collection.url }}" class="ai-shop-category-item-{{ ai_gen_id }}">
+          <div class="ai-shop-category-circle-{{ ai_gen_id }}{% if block.settings.category_3_image != blank %} ai-shop-category-circle--image-{{ ai_gen_id }}{% endif %}">
+            {% if block.settings.category_3_image != blank %}
+              {{
+                block.settings.category_3_image
+                | image_url: width: 640
+                | image_tag:
+                  class: logo_img_class,
+                  loading: 'lazy',
+                  alt: '',
+                  widths: '120, 180, 240, 360, 480, 640',
+                  sizes: '(min-width: 750px) ' | append: block.settings.circle_size_desktop | append: 'px, ' | append: block.settings.circle_size_mobile | append: 'px'
+              }}
+            {% else %}
+              <div class="ai-shop-category-icon-{{ ai_gen_id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+          <span class="ai-shop-category-label-{{ ai_gen_id }}">{{ block.settings.category_3_label }}</span>
+        </a>
+      {% endif %}
+
+      {% if block.settings.category_4_collection != blank %}
+        <a href="{{ block.settings.category_4_collection.url }}" class="ai-shop-category-item-{{ ai_gen_id }}">
+          <div class="ai-shop-category-circle-{{ ai_gen_id }}{% if block.settings.category_4_image != blank %} ai-shop-category-circle--image-{{ ai_gen_id }}{% endif %}">
+            {% if block.settings.category_4_image != blank %}
+              {{
+                block.settings.category_4_image
+                | image_url: width: 640
+                | image_tag:
+                  class: logo_img_class,
+                  loading: 'lazy',
+                  alt: '',
+                  widths: '120, 180, 240, 360, 480, 640',
+                  sizes: '(min-width: 750px) ' | append: block.settings.circle_size_desktop | append: 'px, ' | append: block.settings.circle_size_mobile | append: 'px'
+              }}
+            {% else %}
+              <div class="ai-shop-category-icon-{{ ai_gen_id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M6 2h12v20H6z"/>
+                  <path d="M6 8h12"/>
+                  <path d="M6 14h12"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+          <span class="ai-shop-category-label-{{ ai_gen_id }}">{{ block.settings.category_4_label }}</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</shop-by-category-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ShopByCategory{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.setupAccessibility();
+      }
+
+      setupAccessibility() {
+        const links = this.querySelectorAll('.ai-shop-category-item-{{ ai_gen_id }}');
+        links.forEach(link => {
+          link.setAttribute('role', 'link');
+        });
+      }
+    }
+
+    customElements.define('shop-by-category-{{ ai_gen_id }}', ShopByCategory{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop by category",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "SHOP BY CATEGORY"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Desktop heading size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Mobile heading size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Spacing below heading",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#3B2314"
+    },
+    {
+      "type": "header",
+      "content": "Category 1"
+    },
+    {
+      "type": "collection",
+      "id": "category_1_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "category_1_label",
+      "label": "Label",
+      "default": "Kurtas"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_1_image",
+      "label": "Category icon",
+      "info": "Upload PNG or SVG from your library. Replaces the default icon; label below is the link text for accessibility."
+    },
+    {
+      "type": "header",
+      "content": "Category 2"
+    },
+    {
+      "type": "collection",
+      "id": "category_2_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "category_2_label",
+      "label": "Label",
+      "default": "Sets"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_2_image",
+      "label": "Category icon",
+      "info": "Upload PNG or SVG from your library. Replaces the default icon; label below is the link text for accessibility."
+    },
+    {
+      "type": "header",
+      "content": "Category 3"
+    },
+    {
+      "type": "collection",
+      "id": "category_3_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "category_3_label",
+      "label": "Label",
+      "default": "Dupattas"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_3_image",
+      "label": "Category icon",
+      "info": "Upload PNG or SVG from your library. Replaces the default icon; label below is the link text for accessibility."
+    },
+    {
+      "type": "header",
+      "content": "Category 4"
+    },
+    {
+      "type": "collection",
+      "id": "category_4_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "category_4_label",
+      "label": "Label",
+      "default": "Bottoms"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_4_image",
+      "label": "Category icon",
+      "info": "Upload PNG or SVG from your library. Replaces the default icon; label below is the link text for accessibility."
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "circle_size_desktop",
+      "label": "Circle size",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 140
+    },
+    {
+      "type": "range",
+      "id": "icon_size_desktop",
+      "label": "Icon size",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "label_size_desktop",
+      "label": "Label size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap between items",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "circle_size_mobile",
+      "label": "Circle size",
+      "min": 60,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "Icon size",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "label_size_mobile",
+      "label": "Label size",
+      "min": 8,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap between items",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section background",
+      "default": "#f7f3eb"
+    },
+    {
+      "type": "color",
+      "id": "circle_background",
+      "label": "Circle background",
+      "default": "#efe8dc"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#3B2314"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#3B2314"
+    },
+    {
+      "type": "range",
+      "id": "label_spacing",
+      "label": "Space between circle and label",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by category"
+    }
+  ]
+}
+{% endschema %}
