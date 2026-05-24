@@ -598,3 +598,723 @@
 .soy-product-pdp .shopify-app-block {
   margin-top: 1rem;
 }
+
+/* ============================================================
+   WARM BOUTIQUE — MOBILE REVAMP
+   Style-only, scoped to mobile (<= 749px). Keeps DOM + fonts.
+   ============================================================ */
+@media screen and (max-width: 749px) {
+  /* Soften overall page tone */
+  .soy-product-pdp {
+    --soy-warm-card: #fbf6ee;
+    --soy-warm-card-strong: #f3ebdc;
+    --soy-warm-border: rgba(60, 42, 33, 0.08);
+    --soy-warm-shadow: 0 1px 0 rgba(60, 42, 33, 0.04), 0 8px 24px rgba(60, 42, 33, 0.05);
+    background: var(--soy-cream);
+  }
+
+  /* Comfortable rhythm between detail blocks */
+  .soy-product-pdp .product-details .group-block-content,
+  .soy-product-pdp .product-details > .group-block {
+    row-gap: 1.1rem;
+  }
+
+  /* Highlights pills — warm tinted chips */
+  .soy-product-pdp .soy-pdp-highlights__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+  }
+  .soy-product-pdp .soy-pdp-highlights__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--soy-warm-card-strong);
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--soy-text);
+    font-weight: 600;
+  }
+  .soy-product-pdp .soy-pdp-highlights__icon { color: var(--soy-peach); }
+
+  /* Title block — tighter, warmer */
+  .soy-product-pdp .product-details h1 {
+    font-size: clamp(1.7rem, 6.5vw, 2.25rem);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+  }
+
+  /* Rating row — peach accent, lighter weight */
+  .soy-product-pdp .rating-wrapper {
+    margin-top: 0.5rem;
+    color: var(--soy-peach);
+  }
+  .soy-product-pdp .rating-wrapper .stars { color: var(--soy-peach); }
+
+  /* Price — bolder, slightly bigger */
+  .soy-product-pdp product-price .price {
+    font-size: clamp(1.45rem, 5.5vw, 1.85rem);
+    color: var(--soy-text);
+  }
+
+  /* Stock / inventory badge as pill */
+  .soy-product-pdp product-inventory .product-inventory__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.65rem;
+    background: var(--soy-warm-card-strong);
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--soy-text);
+  }
+
+  /* Size selector — softer warm look */
+  .soy-product-pdp .variant-picker .variant-option--buttons legend,
+  .soy-product-pdp .variant-option__legend-label {
+    color: var(--soy-text);
+    opacity: 0.75;
+    font-size: 0.7rem;
+  }
+  .soy-product-pdp .variant-option--buttons .variant-option__button-label {
+    border-radius: 12px;
+    width: auto;
+    height: 2.85rem;
+    min-width: 2.85rem;
+    padding: 0 0.85rem;
+    background: #fff;
+    border: 1px solid var(--soy-warm-border);
+    box-shadow: var(--soy-warm-shadow);
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .soy-product-pdp .variant-option--buttons .variant-option__button-label:hover {
+    border-color: var(--soy-peach-muted);
+  }
+  .soy-product-pdp .variant-option__button-label:has(input:checked) {
+    background: var(--soy-text);
+    border-color: var(--soy-text);
+    color: var(--soy-cream);
+    border-width: 1px;
+  }
+  .soy-product-pdp .variant-option__button-label:has(input:checked) .variant-option__button-label__text {
+    color: var(--soy-cream);
+  }
+  .soy-product-pdp .variant-option__size-guide-link,
+  .soy-product-pdp .soy-pdp-size-guide-link {
+    color: var(--soy-peach);
+    font-weight: 600;
+  }
+
+  /* Fit callout (model note + fit tip) — warm card */
+  .soy-product-pdp .soy-pdp-fit-callout .soy-product-info__callout {
+    background: var(--soy-warm-card);
+    border: 1px solid var(--soy-warm-border);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    box-shadow: var(--soy-warm-shadow);
+  }
+  .soy-product-pdp .soy-pdp-fit-callout .soy-product-info__callout p {
+    font-size: 0.8125rem;
+    color: var(--soy-text);
+    line-height: 1.55;
+  }
+  .soy-product-pdp .soy-pdp-fit-callout .soy-product-info__callout-accent {
+    color: var(--soy-peach);
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  /* Custom measurements — warm rounded card */
+  .soy-product-pdp .soy-measurements__wrap {
+    background: var(--soy-warm-card);
+    border: 1px solid var(--soy-warm-border);
+    border-radius: 16px;
+    padding: 1.1rem 1.15rem 1.25rem;
+    box-shadow: var(--soy-warm-shadow);
+  }
+  .soy-product-pdp .soy-measurements__title {
+    color: var(--soy-text);
+    font-size: 0.78rem;
+  }
+  .soy-product-pdp .soy-measurements__input {
+    background: #fff;
+    border: 1px solid var(--soy-warm-border);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+  }
+  .soy-product-pdp .soy-measurements__input:focus {
+    border-color: var(--soy-peach);
+    box-shadow: 0 0 0 3px var(--soy-peach-soft);
+  }
+
+  /* Buy buttons — rounded, warm dark CTA */
+  .soy-product-pdp .buy-buttons .button,
+  .soy-product-pdp .buy-buttons .add-to-cart-button {
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+  }
+  .soy-product-pdp .buy-buttons .add-to-cart-button {
+    background: var(--soy-text);
+    color: var(--soy-cream);
+    border: none;
+  }
+  .soy-product-pdp .buy-buttons .button[aria-label*='Buy'],
+  .soy-product-pdp .buy-buttons .shopify-payment-button__button {
+    background: transparent;
+    color: var(--soy-text);
+    border: 1px solid var(--soy-text);
+  }
+
+  /* Sticky bottom bar — warmer surface, taller pill cart button */
+  .soy-product-pdp .buy-buttons-block {
+    background: rgba(250, 247, 242, 0.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid var(--soy-warm-border);
+    box-shadow: 0 -4px 24px rgba(60, 42, 33, 0.08);
+    padding: 12px 14px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .soy-product-pdp .buy-buttons-block .add-to-cart-button {
+    border-radius: 14px;
+    min-height: 50px;
+  }
+  .soy-sticky-info__price { color: var(--soy-text); font-weight: 700; }
+  .soy-sticky-info__heart { color: var(--soy-peach); }
+
+  /* Delivery / assurance rows — warm card stack */
+  .soy-product-pdp .soy-assurance {
+    list-style: none;
+    margin: 0;
+    padding: 0.85rem 1rem;
+    background: var(--soy-warm-card);
+    border: 1px solid var(--soy-warm-border);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    box-shadow: var(--soy-warm-shadow);
+  }
+  .soy-product-pdp .soy-assurance__row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.8125rem;
+    color: var(--soy-text);
+    line-height: 1.4;
+  }
+  .soy-product-pdp .soy-assurance__icon {
+    width: 1.6rem;
+    height: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--soy-peach-soft);
+    color: var(--soy-peach);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .soy-product-pdp .soy-assurance__icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  /* Details tabs — peach underline on active, warmer inactive */
+  .soy-product-pdp .soy-tabs {
+    margin-top: 0.5rem;
+  }
+  .soy-product-pdp .soy-tabs__nav {
+    border-bottom: 1px solid var(--soy-warm-border);
+    gap: 1.5rem;
+  }
+  .soy-product-pdp .soy-tabs__tab {
+    color: rgba(60, 42, 33, 0.45);
+    font-size: 0.7rem;
+    padding-bottom: 0.75rem;
+  }
+  .soy-product-pdp .soy-tabs__radio:nth-of-type(1):checked ~ .soy-tabs__nav > .soy-tabs__tab:nth-child(1),
+  .soy-product-pdp .soy-tabs__radio:nth-of-type(2):checked ~ .soy-tabs__nav > .soy-tabs__tab:nth-child(2),
+  .soy-product-pdp .soy-tabs__radio:nth-of-type(3):checked ~ .soy-tabs__nav > .soy-tabs__tab:nth-child(3) {
+    color: var(--soy-text);
+    border-bottom-color: var(--soy-peach);
+    border-bottom-width: 2px;
+  }
+  .soy-product-pdp .soy-tabs__label {
+    color: var(--soy-peach);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+  }
+  .soy-product-pdp .soy-tabs__body {
+    color: var(--soy-text);
+    line-height: 1.65;
+  }
+
+  /* Description accordion — warm separator, peach caret */
+  .soy-product-pdp .soy-desc-accordion__details {
+    border-top: 1px solid var(--soy-warm-border);
+    border-bottom: 1px solid var(--soy-warm-border);
+    padding: 0.25rem 0;
+  }
+  .soy-product-pdp .soy-desc-accordion__summary {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--soy-text);
+    padding: 1rem 0;
+  }
+  .soy-product-pdp .soy-desc-accordion__summary .icon-caret { color: var(--soy-peach); }
+  .soy-product-pdp .soy-desc-accordion__body { color: var(--soy-text); }
+
+  /* Complementary row — warm rounded cards */
+  .soy-product-pdp .soy-complementary__title {
+    color: var(--soy-peach);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+  }
+  .soy-product-pdp .soy-complementary__card {
+    flex: 0 0 42vw;
+    max-width: 160px;
+  }
+  .soy-product-pdp .soy-complementary__media {
+    border-radius: 14px;
+    box-shadow: var(--soy-warm-shadow);
+  }
+  .soy-product-pdp .soy-complementary__card-title {
+    color: var(--soy-text);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* "You may also like" recommendations — round product cards */
+  .product-recommendations .product-card,
+  .product-recommendations product-card-component,
+  .product-recommendations .product-card__media,
+  .product-recommendations [class*='product-card-image'] {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .product-recommendations .product-card__information,
+  .product-recommendations .product-card__title {
+    color: var(--soy-text, #3c2a21);
+  }
+
+  /* Testimonials section — warmer card surfaces */
+  .soy-testimonials {
+    background: var(--soy-cream, #faf7f2);
+  }
+  .soy-testimonials__card,
+  .soy-testimonials [class*='__card'] {
+    background: #fbf6ee !important;
+    border: 1px solid rgba(60, 42, 33, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 1px 0 rgba(60, 42, 33, 0.04), 0 8px 24px rgba(60, 42, 33, 0.05);
+  }
+  .soy-testimonials__verified {
+    color: #2f8a55;
+  }
+}
+
+/* ============================================================
+   LOOX REVIEWS — WARM BOUTIQUE RESTYLE (MOBILE)
+   Loox renders via injected JS. Selectors based on Loox public class names.
+   If Loox updates class structure, selectors may need refresh.
+   ============================================================ */
+@media screen and (max-width: 749px) {
+  /* Local tokens for review section */
+  #looxReviews,
+  .loox-reviews-default,
+  .loox-block {
+    --soy-r-text: #3c2a21;
+    --soy-r-muted: rgba(60, 42, 33, 0.6);
+    --soy-r-faint: rgba(60, 42, 33, 0.45);
+    --soy-r-peach: #c48b6c;
+    --soy-r-peach-soft: rgba(196, 139, 108, 0.12);
+    --soy-r-card: #fbf6ee;
+    --soy-r-card-strong: #f3ebdc;
+    --soy-r-border: rgba(60, 42, 33, 0.08);
+    --soy-r-shadow: 0 1px 0 rgba(60, 42, 33, 0.04), 0 8px 24px rgba(60, 42, 33, 0.05);
+    --soy-r-good: #2f8a55;
+  }
+
+  /* Outer container background */
+  .loox-reviews-default,
+  #looxReviews {
+    background: var(--soy-cream, #faf7f2);
+    padding: 1rem 0;
+    font-family: var(--font-body--family);
+    color: var(--soy-r-text);
+  }
+
+  /* Aggregate header ("Worn & reviewed") */
+  .loox-reviews-default h2,
+  .loox-reviews-default .loox-aggregate-title,
+  .loox-reviews-default .loox-aggregate-heading {
+    font-family: var(--font-heading--family);
+    font-style: var(--font-heading--style);
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    letter-spacing: 0.01em;
+    color: var(--soy-r-text);
+    margin: 0 0 1rem;
+  }
+
+  /* Aggregate summary card (big rating + breakdown bars) */
+  .loox-aggregate-rating,
+  .loox-aggregate-summary,
+  .loox-reviews-summary {
+    background: #fff;
+    border: 1px solid var(--soy-r-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: var(--soy-r-shadow);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Big average rating number */
+  .loox-aggregate-rating .loox-rating-average,
+  .loox-aggregate-summary .loox-rating-value,
+  [class*='loox-aggregate'] [class*='average'],
+  [class*='loox-rating-large'] {
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.5rem, 9vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--soy-r-text);
+  }
+  [class*='loox-aggregate'] [class*='out-of'],
+  [class*='loox-aggregate'] [class*='scale'] {
+    color: var(--soy-r-faint);
+    font-size: 0.9rem;
+  }
+
+  /* Stars — peach */
+  .loox-reviews-default .loox-stars,
+  .loox-reviews-default [class*='loox-star'],
+  .loox-reviews-default svg[class*='star'] {
+    color: var(--soy-r-peach);
+    fill: var(--soy-r-peach);
+  }
+
+  /* "VERIFIED RATINGS" label */
+  [class*='loox-aggregate'] [class*='verified-count'],
+  [class*='loox-aggregate'] [class*='reviews-count'] {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--soy-r-muted);
+    font-weight: 600;
+  }
+
+  /* Distribution bars (5★/4★/3★/2★/1★) */
+  .loox-rating-bar,
+  .loox-distribution-bar,
+  [class*='loox-distribution'] [class*='bar'] {
+    background: var(--soy-r-card-strong) !important;
+    border-radius: 999px !important;
+    height: 6px !important;
+    overflow: hidden;
+  }
+  .loox-rating-bar > *,
+  .loox-distribution-bar > *,
+  [class*='loox-distribution'] [class*='bar'] > * {
+    background: var(--soy-r-peach) !important;
+    border-radius: 999px !important;
+  }
+  [class*='loox-distribution'] [class*='label'],
+  [class*='loox-distribution'] [class*='count'] {
+    font-size: 0.8125rem;
+    color: var(--soy-r-text);
+  }
+
+  /* "96% recommend" callout */
+  [class*='loox-recommend'],
+  [class*='loox-percent'] {
+    color: var(--soy-r-good);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--soy-r-border);
+    margin-top: 0.75rem;
+  }
+
+  /* Topics / "WHAT BUYERS MENTION" pills */
+  .loox-topics,
+  [class*='loox-topic'],
+  [class*='loox-sentiment'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .loox-topics > *,
+  [class*='loox-topic-tag'],
+  [class*='loox-sentiment-tag'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.8rem;
+    background: var(--soy-r-card);
+    border: 1px solid var(--soy-r-border);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: var(--soy-r-text);
+    font-weight: 500;
+  }
+
+  /* Customer photos carousel */
+  .loox-photo-gallery,
+  [class*='loox-photos-grid'],
+  [class*='loox-customer-photos'] {
+    margin: 1rem 0 1.5rem;
+  }
+  .loox-photo-gallery img,
+  [class*='loox-photos'] img,
+  [class*='loox-customer-photo'] img {
+    border-radius: 12px;
+    box-shadow: var(--soy-r-shadow);
+  }
+
+  /* "CUSTOMER PHOTOS · 84" heading */
+  [class*='loox-photos-heading'],
+  [class*='loox-photos-title'] {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--soy-r-peach);
+    font-weight: 600;
+  }
+  [class*='loox-photos'] [class*='see-all'],
+  [class*='see-all'] {
+    color: var(--soy-r-peach);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 0.8125rem;
+  }
+
+  /* Filter pills (All / With photos / 5★ / Fit feedback) */
+  .loox-filters,
+  [class*='loox-filter'][class*='bar'],
+  [class*='loox-tabs'] {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    margin: 1rem 0;
+  }
+  .loox-filters > *,
+  [class*='loox-filter-button'],
+  [class*='loox-tab-button'] {
+    flex-shrink: 0;
+    padding: 0.5rem 0.85rem;
+    background: var(--soy-r-card);
+    border: 1px solid var(--soy-r-border);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: var(--soy-r-text);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .loox-filters [class*='active'],
+  [class*='loox-filter-button'][class*='active'],
+  [class*='loox-tab-button'][class*='active'],
+  [aria-selected='true'][class*='loox'] {
+    background: var(--soy-r-text);
+    color: var(--soy-cream, #faf7f2);
+    border-color: var(--soy-r-text);
+  }
+
+  /* Sort dropdown */
+  [class*='loox-sort'] {
+    font-size: 0.8125rem;
+    color: var(--soy-r-muted);
+  }
+
+  /* Review cards */
+  .loox-review,
+  .loox-reviews-default li[class*='review'],
+  [class*='loox-review-item'] {
+    background: #fff;
+    border: 1px solid var(--soy-r-border);
+    border-radius: 16px;
+    padding: 1.1rem;
+    margin-bottom: 0.85rem;
+    box-shadow: var(--soy-r-shadow);
+    list-style: none;
+  }
+
+  /* Avatar circle (initials) */
+  [class*='loox-avatar'],
+  [class*='loox-reviewer-avatar'],
+  [class*='loox-author-initial'] {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--soy-r-card-strong);
+    color: var(--soy-r-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  /* Author name */
+  [class*='loox-review-author'],
+  [class*='loox-reviewer-name'] {
+    font-weight: 700;
+    color: var(--soy-r-text);
+    font-size: 0.875rem;
+  }
+
+  /* Verified badge */
+  [class*='loox-verified'],
+  [class*='loox-badge-verified'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--soy-r-good);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* Location / date meta */
+  [class*='loox-review-meta'],
+  [class*='loox-review-location'],
+  [class*='loox-review-date'] {
+    color: var(--soy-r-faint);
+    font-size: 0.75rem;
+  }
+
+  /* Rating badge (5.0★) */
+  [class*='loox-review-rating'],
+  [class*='loox-rating-badge'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--soy-r-good);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  [class*='loox-review-rating'] [class*='star'],
+  [class*='loox-rating-badge'] [class*='star'] {
+    color: #fff !important;
+    fill: #fff !important;
+  }
+
+  /* Review title */
+  [class*='loox-review-title'] {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--soy-r-text);
+    margin: 0.5rem 0 0.4rem;
+  }
+
+  /* Review body */
+  [class*='loox-review-body'],
+  [class*='loox-review-content'] {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--soy-r-text);
+  }
+
+  /* Attributes (SIZE · S · FIT · True to size) */
+  [class*='loox-review-attributes'],
+  [class*='loox-review-product-info'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--soy-r-border);
+    font-size: 0.75rem;
+    color: var(--soy-r-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  [class*='loox-review-attributes'] strong,
+  [class*='loox-review-attributes'] [class*='value'] {
+    color: var(--soy-r-text);
+    font-weight: 600;
+  }
+
+  /* Review photos */
+  [class*='loox-review-photos'] img,
+  [class*='loox-review-images'] img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-right: 0.5rem;
+  }
+
+  /* Helpful / Report row */
+  [class*='loox-helpful'],
+  [class*='loox-review-actions'] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--soy-r-border);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--soy-r-muted);
+    font-weight: 600;
+  }
+  [class*='loox-helpful-button'],
+  [class*='loox-helpful'] button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.65rem;
+    background: var(--soy-r-card);
+    border: 1px solid var(--soy-r-border);
+    border-radius: 999px;
+    color: var(--soy-r-text);
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  [class*='loox-report'] {
+    margin-left: auto;
+    color: var(--soy-r-faint);
+    background: none;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Pagination */
+  [class*='loox-pagination'] button,
+  [class*='loox-load-more'] {
+    background: var(--soy-r-text);
+    color: var(--soy-cream, #faf7f2);
+    border: none;
+    border-radius: 14px;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
